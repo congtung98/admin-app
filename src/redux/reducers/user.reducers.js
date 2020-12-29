@@ -26,7 +26,7 @@ export default (state = initialState, action) => {
                 ...state,
                 loading: false,
                 error: action.payload.error
-            }
-        return state;
+            }  
     }
+    return state;
 }
