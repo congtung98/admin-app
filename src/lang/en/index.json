@@ -1,0 +1,18 @@
+{
+    "header": {
+        "title": "Admin dashboard",
+        "trans": "Language",
+        "signout": "Signout",
+        "signin": "Signin",
+        "signup": "Signup"
+    },
+    "language": {
+        "vi": "Vietnam",
+        "en": "English"
+    },
+    "sidebar": {
+        "home": "Home",
+        "product": "Products",
+        "order": "Orders"
+    }
+}

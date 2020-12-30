@@ -1,0 +1,18 @@
+{
+    "header": {
+        "title": "Bảng quản trị",
+        "trans": "Ngôn ngữ",
+        "signout": "Đăng xuất",
+        "signin": "Đăng nhập",
+        "signup": "Đăng ký"
+    },
+    "language": {
+        "vi": "Việt Nam",
+        "en": "Anh"
+    },
+    "sidebar": {
+        "home": "Trang chủ",
+        "product": "Quản lý sản phẩm",
+        "order": "Quản lý đơn hàng"
+    }
+}
