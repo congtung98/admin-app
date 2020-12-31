@@ -16,6 +16,7 @@ const Layout = (props) => {
                         <Col md={2} className="sidebar">
                             <ul>
                                 <li><NavLink to={`/`}>{t('sidebar.home')}</NavLink></li>
+                                <li><NavLink to={`/category`}>{t('sidebar.category')}</NavLink></li>
                                 <li><NavLink to={`/products`}>{t('sidebar.product')}</NavLink></li>
                                 <li><NavLink to={`/orders`}>{t('sidebar.order')}</NavLink></li>
                             </ul>

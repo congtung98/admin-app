@@ -12,6 +12,7 @@
     },
     "sidebar": {
         "home": "Home",
+        "category": "Category",
         "product": "Products",
         "order": "Orders"
     }

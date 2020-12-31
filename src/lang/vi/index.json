@@ -12,6 +12,7 @@
     },
     "sidebar": {
         "home": "Trang chủ",
+        "category": "Quản lý danh mục sản phẩm",
         "product": "Quản lý sản phẩm",
         "order": "Quản lý đơn hàng"
     }
