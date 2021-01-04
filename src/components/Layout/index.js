@@ -3,6 +3,7 @@ import Header from '../Header';
 import { Container, Row, Col } from 'react-bootstrap';
 import { NavLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import './style.css';
 
 const Layout = (props) => {
     const [t, i18] = useTranslation('common');
@@ -15,7 +16,7 @@ const Layout = (props) => {
                     <Row>
                         <Col md={2} className="sidebar">
                             <ul>
-                                <li><NavLink to={`/`}>{t('sidebar.home')}</NavLink></li>
+                                <li><NavLink exact to={`/`}>{t('sidebar.home')}</NavLink></li>
                                 <li><NavLink to={`/category`}>{t('sidebar.category')}</NavLink></li>
                                 <li><NavLink to={`/products`}>{t('sidebar.product')}</NavLink></li>
                                 <li><NavLink to={`/orders`}>{t('sidebar.order')}</NavLink></li>
