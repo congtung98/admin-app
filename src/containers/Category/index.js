@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import Layout from '../../components/Layout';
-import { Container, Row, Col, Modal, Button } from 'react-bootstrap';
+import { Container, Row, Col } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { addCategory, getAllCategory } from '../../redux/actions';
 import Input from '../../components/UI/Input';
+import Modal from '../../components/UI/Modal';
 
 const Category = (props) => {
     const category = useSelector(state => state.category);
@@ -12,10 +13,6 @@ const Category = (props) => {
     const [categoryImage, setCategoryImage] = useState('');
     const [show, setShow] = useState(false);
     const dispatch = useDispatch();
-
-    useEffect(() => {
-        dispatch(getAllCategory());
-    }, []);
 
     const handleClose = () => {
         
@@ -26,6 +23,8 @@ const Category = (props) => {
         form.append('categoryImage', categoryImage);
 
         dispatch(addCategory(form));
+        setCategoryName('');
+        setParentCategoryId('');
         // const cat = {
         //     categoryName,
         //     parentCategoryId,
@@ -86,13 +85,12 @@ const Category = (props) => {
                     </Col>
                 </Row>
             </Container>
-
-            <Modal show={show} onHide={handleClose}>
-                <Modal.Header closeButton>
-                <Modal.Title>Add New Category</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <Input
+            <Modal 
+                show={show}
+                handleClose={handleClose}
+                modalTitle={'Add New Category'}
+            >
+                <Input
                         value={categoryName}
                         placeholder={`Category Name`}
                         onChange={(e) => setCategoryName(e.target.value)}
@@ -111,13 +109,8 @@ const Category = (props) => {
                     </select>
 
                     <input type="file" name="categoryImage" onChange={handleCategoryImage}/>
-                </Modal.Body>
-                <Modal.Footer>
-                <Button variant="primary" onClick={handleClose}>
-                    Save Changes
-                </Button>
-                </Modal.Footer>
             </Modal>
+            
         </Layout>
     )
 }
