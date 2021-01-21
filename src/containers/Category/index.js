@@ -5,6 +5,18 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addCategory, getAllCategory } from '../../redux/actions';
 import Input from '../../components/UI/Input';
 import Modal from '../../components/UI/Modal';
+import CheckboxTree from 'react-checkbox-tree';
+import {
+    IoIosCheckboxOutline,
+    IoIosCheckbox,
+    IoIosArrowForward,
+    IoIosArrowDown,
+    IoIosPaper,
+    IoIosFolder,
+    IoIosFolderOpen
+} from 'react-icons/io';
+
+import 'react-checkbox-tree/lib/react-checkbox-tree.css';
 
 const Category = (props) => {
     const category = useSelector(state => state.category);
@@ -12,6 +24,11 @@ const Category = (props) => {
     const [parentCategoryId, setParentCategoryId] = useState('');
     const [categoryImage, setCategoryImage] = useState('');
     const [show, setShow] = useState(false);
+    const [checked, setChecked] = useState([]);
+    const [expanded, setExpanded] = useState([]);
+    const [checkedArray, setCheckedArray] = useState([]);
+    const [expandedArray, setExpandedArray] = useState([]);
+    const [updateCategoryModal, setUpdateCategoryModal] = useState(false);
     const dispatch = useDispatch();
 
     const handleClose = () => {
@@ -41,19 +58,19 @@ const Category = (props) => {
         let _categories = [];
         for(let category of categories){
             _categories.push(
-                <li key={category.name}>
-                    {category.name}
-                    {category.children.length > 0 ? (<ul>{renderCategories(category.children)}</ul>) : null}
-                </li>
+                {
+                    label: category.name,
+                    value: category._id,
+                    children: category.children.length > 0 && renderCategories(category.children)
+                }
             );
         }
-
         return _categories;
     }
 
     const createCategoryList = (categories, options = []) => {
         for(let category of categories){
-            options.push({ value: category._id, name: category.name });
+            options.push({ value: category._id, name: category.name, parentId: category.parentId });
             if(category.children.length > 0){
                 createCategoryList(category.children, options)
             }
@@ -64,6 +81,34 @@ const Category = (props) => {
 
     const handleCategoryImage = (e) => {
         setCategoryImage(e.target.files[0]);
+    }
+
+    const updateCategory = () => {
+        setUpdateCategoryModal(true);
+        const categories = createCategoryList(category.categories);
+        const checkedArray = [];
+        const expandedArray = [];
+        checked.length > 0 && checked.forEach((categoryId, index) => {
+            const category = categories.find((category, _index) => categoryId === category.value);
+            category && checkedArray.push(category);
+        });
+        expanded.length > 0 && expanded.forEach((categoryId, index) => {
+            const category = categories.find((category, _index) => categoryId === category.value);
+            category && expandedArray.push(category);
+        });
+        setCheckedArray(checkedArray);
+        setExpandedArray(expandedArray);
+        console.log(categories, checkedArray, expandedArray);
+    }
+    
+    const handleCategoryInput = (key, value, index, type) => {
+        if(type === 'checked'){
+            const updatedCheckedArray = checkedArray.map((item, _index) => index === _index ? { ...item, [key]: value } : item );
+            setCheckedArray(updatedCheckedArray);
+        }else if(type === 'expanded'){
+            const updatedExpandedArray = expandedArray.map((item, _index) => index === _index ? { ...item, [key]: value } : item );
+            setExpandedArray(updatedExpandedArray);
+        }
     }
 
     return (
@@ -78,10 +123,33 @@ const Category = (props) => {
                     </Col>
                 </Row>
                 <Row>
-                    <Col md={2}>
-                        <ul>
+                    <Col md={12}>
+                        {/* <ul>
                             { renderCategories(category.categories) }
-                        </ul>
+                        </ul> */}
+                        <CheckboxTree
+                            nodes={renderCategories(category.categories)}
+                            checked={checked}
+                            expanded={expanded}
+                            onCheck={checked => setChecked(checked)}
+                            onExpand={expanded => setExpanded(expanded)}
+                            icons={{
+                                check: <IoIosCheckbox />,
+                                uncheck: <IoIosCheckboxOutline />,
+                                halfCheck: <IoIosCheckboxOutline />,
+                                expandClose: <IoIosArrowDown />,
+                                expandOpen: <IoIosArrowForward />,
+                                leaf: <IoIosPaper />,
+                                parentClose: <IoIosFolder />,
+                                parentOpen: <IoIosFolderOpen />
+                            }}
+                        />
+                    </Col>
+                </Row>
+                <Row>
+                    <Col>
+                            <button>Delete</button>
+                            <button onClick={updateCategory}>Edit</button>
                     </Col>
                 </Row>
             </Container>
@@ -111,6 +179,97 @@ const Category = (props) => {
                     <input type="file" name="categoryImage" onChange={handleCategoryImage}/>
             </Modal>
             
+            {/* Edit categories */}
+            <Modal 
+                show={updateCategoryModal}
+                handleClose={() => setUpdateCategoryModal(false)}
+                modalTitle={'Update Category'}
+                size="lg"
+            >
+                <Row>
+                    <Col>
+                        <h6>Expanded</h6>
+                    </Col>
+                </Row>
+                {
+                    expandedArray.length > 0 &&
+                    expandedArray.map((item, index) => 
+                        <Row key={index}>
+                            <Col>
+                                <Input
+                                    value={item.name}
+                                    placeholder={`Category Name`}
+                                    onChange={(e) => handleCategoryInput('name', e.target.value, index, 'expanded')}
+                                />
+                            </Col>
+                            <Col> 
+                                <select 
+                                className="form-control"
+                                value = {item.parentId} 
+                                onChange={(e) => handleCategoryInput('parentId', e.target.value, index, 'expanded')}
+                                >
+                                    <option>Select category</option>
+                                    {
+                                        createCategoryList(category.categories).map(option =>
+                                            <option key={option.value} value={option.value}>{option.name}</option>
+                                        )
+                                    }
+                                </select>
+                            </Col>
+                            <Col>
+                                <select
+                                    className="form-control"
+                                >
+                                    <option value="">Select Type</option>
+                                    <option value="store">Store</option>
+                                    <option value="product">Product</option>
+                                    <option value="page">Page</option>
+                                </select>
+                            </Col>
+                        </Row>  
+                    )
+                }
+                <h6>Checked Categories</h6>
+                {
+                    checkedArray.length > 0 &&
+                    checkedArray.map((item, index) => 
+                        <Row key={index}>
+                            <Col>
+                                <Input
+                                    value={item.name}
+                                    placeholder={`Category Name`}
+                                    onChange={(e) => handleCategoryInput('name', e.target.value, index, 'checked')}
+                                />
+                            </Col>
+                            <Col> 
+                                <select 
+                                className="form-control"
+                                value = {item.parentId} 
+                                onChange={(e) => handleCategoryInput('parentId', e.target.value, index, 'checked')}
+                                >
+                                    <option>Select category</option>
+                                    {
+                                        createCategoryList(category.categories).map(option =>
+                                            <option key={option.value} value={option.value}>{option.name}</option>
+                                        )
+                                    }
+                                </select>
+                            </Col>
+                            <Col>
+                                <select
+                                    className="form-control"
+                                >
+                                    <option value="">Select Type</option>
+                                    <option value="store">Store</option>
+                                    <option value="product">Product</option>
+                                    <option value="page">Page</option>
+                                </select>
+                            </Col>
+                        </Row>  
+                    )
+                }
+                    {/* <input type="file" name="categoryImage" onChange={handleCategoryImage}/> */}
+            </Modal>
         </Layout>
     )
 }
