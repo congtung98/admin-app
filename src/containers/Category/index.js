@@ -310,11 +310,11 @@ const Category = (props) => {
             >
                 <h5>Expanded</h5>
                 {
-                    expandedArray.map((item, index) => <span key={index}>{item.name}</span>)
+                    expandedArray.map((item, index) => <><span key={index}>{item.name}</span><br/></>)
                 }
                 <h5>Checked</h5>
                 {
-                    checkedArray.map((item, index) => <span key={index}>{item.name}</span>)
+                    checkedArray.map((item, index) => <><span key={index}>{item.name}</span><br/></>)
                 }
             </Modal>
         )
