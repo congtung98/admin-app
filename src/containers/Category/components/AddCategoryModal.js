@@ -8,6 +8,7 @@ const AddCategoryModal = (props) => {
     const {
         show,
         handleClose,
+        handleSave,
         modalTitle,
         categoryName,
         setCategoryName,
@@ -20,6 +21,7 @@ const AddCategoryModal = (props) => {
         <Modal 
             show={show}
             handleClose={handleClose}
+            handleSave={handleSave}
             modalTitle={modalTitle}
         >
             <Row>

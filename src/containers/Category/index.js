@@ -8,7 +8,6 @@ import {
     updateCategories,
     deleteCategories as deleteCategoriesAction 
 } from '../../redux/actions';
-import Modal from '../../components/UI/Modal';
 import CheckboxTree from 'react-checkbox-tree';
 import {
     IoIosCheckboxOutline,
@@ -34,16 +33,18 @@ const Category = (props) => {
     const [categoryName, setCategoryName] = useState('');
     const [parentCategoryId, setParentCategoryId] = useState('');
     const [categoryImage, setCategoryImage] = useState('');
-    const [show, setShow] = useState(false);
     const [checked, setChecked] = useState([]);
     const [expanded, setExpanded] = useState([]);
     const [checkedArray, setCheckedArray] = useState([]);
     const [expandedArray, setExpandedArray] = useState([]);
+    const [addCategoryModal, setAddCategoryModal] = useState(false);
     const [updateCategoryModal, setUpdateCategoryModal] = useState(false);
     const [deleteCategoryModal, setDeleteCategoryModal] = useState(false);
     const dispatch = useDispatch();
 
-    const handleClose = () => {
+    console.log(checkedArray, 'Checked');
+
+    const handleSaveAddCategory = () => {
         
         const form = new FormData();
 
@@ -59,9 +60,9 @@ const Category = (props) => {
         dispatch(addCategory(form));
         setCategoryName('');
         setParentCategoryId('');
-        setShow(false);
+        setAddCategoryModal(false);
     };
-    const handleShow = () => setShow(true);
+    const handleShow = () => setAddCategoryModal(true);
 
     const renderCategories = (categories) => {
         let _categories = [];
@@ -97,6 +98,16 @@ const Category = (props) => {
         setUpdateCategoryModal(true);
     }
 
+    const handleCloseAddModal = () => {
+        setAddCategoryModal(false);
+        setCategoryName('');
+        setParentCategoryId('');
+        setCategoryImage('');
+    }
+
+    const handleCloseUpdateModal = () => {
+        setUpdateCategoryModal(false);
+    }
     const handleCloseDeleteModal = () => {
         setDeleteCategoryModal(false);
     }
@@ -143,11 +154,6 @@ const Category = (props) => {
             form.append('type', item.type);
         });
         dispatch(updateCategories(form))
-        .then(result => {
-            if(result){
-                dispatch(getAllCategory())
-            }
-        })
 
         setUpdateCategoryModal(false);
     } 
@@ -185,8 +191,8 @@ const Category = (props) => {
                             <div className="actionBtnContainer">
                                 <span>Action: </span>
                                 <button onClick={handleShow}><IoIosAdd /> <span>Add</span></button>
-                                <button onClick={deleteCategory}><IoIosTrash /> <span>Delete</span></button>
                                 <button onClick={updateCategory}><IoIosCreate /> <span>Edit</span></button>
+                                <button onClick={deleteCategory}><IoIosTrash /> <span>Delete</span></button>
                             </div>
                         </div>
                     </Col>
@@ -214,8 +220,9 @@ const Category = (props) => {
                 </Row>
             </Container>
             <AddCategoryModal
-                show={show}
-                handleClose={handleClose}
+                show={addCategoryModal}
+                handleClose={handleCloseAddModal}
+                handleSave={handleSaveAddCategory}
                 modalTitle={'Add New Category'}
                 categoryName={categoryName}
                 setCategoryName={setCategoryName}
@@ -226,7 +233,8 @@ const Category = (props) => {
             />
             <UpdateCategoriesModal
                 show={updateCategoryModal}
-                handleClose={updateCategoriesForm}
+                handleClose={handleCloseUpdateModal}
+                handleSave={updateCategoriesForm}
                 modalTitle={'Update Category'}
                 size="lg"
                 expandedArray={expandedArray}
