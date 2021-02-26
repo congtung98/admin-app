@@ -14,6 +14,7 @@
         "home": "Home",
         "category": "Category",
         "product": "Products",
-        "order": "Orders"
+        "order": "Orders",
+        "page": "Page"
     }
 }

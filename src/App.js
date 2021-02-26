@@ -10,6 +10,7 @@ import { isUserLoggedIn, getInitialData } from './redux/actions';
 import Products from './containers/Products';
 import Orders from './containers/Orders';
 import Category from './containers/Category';
+import NewPage from './containers/NewPage';
 
 function App() {
 
@@ -27,6 +28,7 @@ function App() {
     <div className="App">
         <Switch>
           <PrivateRoute path="/" exact component={Home} />
+          <PrivateRoute path="/page" exact component={NewPage} />
           <PrivateRoute path="/category" exact component={Category} />
           <PrivateRoute path="/products" exact component={Products} />
           <PrivateRoute path="/orders" exact component={Orders} />

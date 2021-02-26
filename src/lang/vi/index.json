@@ -14,6 +14,7 @@
         "home": "Trang chủ",
         "category": "Quản lý danh mục sản phẩm",
         "product": "Quản lý sản phẩm",
-        "order": "Quản lý đơn hàng"
+        "order": "Quản lý đơn hàng",
+        "page": "Quản lý trang sản phẩm"
     }
 }
