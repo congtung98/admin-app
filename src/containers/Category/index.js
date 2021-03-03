@@ -42,16 +42,22 @@ const Category = (props) => {
     const [deleteCategoryModal, setDeleteCategoryModal] = useState(false);
     const dispatch = useDispatch();
 
-    console.log(checkedArray, 'Checked');
+    useEffect(() => {
+        if(!category.loading){
+            setAddCategoryModal(false);
+            setUpdateCategoryModal(false);
+        }
+    }, [category.loading]);
 
     const handleSaveAddCategory = () => {
         
         const form = new FormData();
 
-        // if(categoryName === ""){
-        //     alert("Name is required");
-        //     return;
-        // }
+        if(categoryName === ""){
+            alert("Category name is required");
+            setAddCategoryModal(false);
+            return;
+        }
 
         form.append('name', categoryName);
         form.append('parentId', parentCategoryId);
@@ -135,10 +141,12 @@ const Category = (props) => {
     
     const handleCategoryInput = (key, value, index, type) => {
         if(type === 'checked'){
-            const updatedCheckedArray = checkedArray.map((item, _index) => index === _index ? { ...item, [key]: value } : item );
+            const updatedCheckedArray = checkedArray.map((item, _index) => 
+                index === _index ? { ...item, [key]: value } : item );
             setCheckedArray(updatedCheckedArray);
         }else if(type === 'expanded'){
-            const updatedExpandedArray = expandedArray.map((item, _index) => index === _index ? { ...item, [key]: value } : item );
+            const updatedExpandedArray = expandedArray.map((item, _index) => 
+                index === _index ? { ...item, [key]: value } : item );
             setExpandedArray(updatedExpandedArray);
         }
     }
@@ -159,8 +167,6 @@ const Category = (props) => {
             form.append('type', item.type);
         });
         dispatch(updateCategories(form))
-
-        setUpdateCategoryModal(false);
     } 
 
 

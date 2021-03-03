@@ -5,7 +5,8 @@ import Modal from '../../components/UI/Modal';
 import { Row, Col, Container } from 'react-bootstrap';
 import linearCategories from '../../helpers/linearCategories';
 import { useSelector, useDispatch } from 'react-redux';
-import { createPage } from '../../redux/actions'
+import { createPage } from '../../redux/actions';
+import Spinner from 'react-bootstrap/Spinner';
 
 const NewPage = () => {
     const [createModal, setCreateModal] = useState(false);
@@ -18,13 +19,26 @@ const NewPage = () => {
     const [banners, setBanners] = useState([]);
     const [products, setProducts] = useState([]);
     const dispatch = useDispatch();
+    const page = useSelector(state => state.page);
 
     useEffect(() => {
         setCategories(linearCategories(category.categories));
     }, [category]);
 
+    useEffect(() => {
+        console.log(page);
+        if(!page.loading){
+            setCreateModal(false);
+            setTitle('');
+            setDesc('');
+            setCategoryId('');
+            setProducts('');
+            setBanners('');
+        }
+    }, [page]);
+
     const onCategoryChange = (e) => {
-        categories.find(category => category._id == e.target.value);
+        categories.find(category => category.value == e.target.value);
         setCategoryId(e.target.value);
         setType(category.type);
     }
@@ -73,7 +87,7 @@ const NewPage = () => {
                 <Container>
                     <Row>
                         <Col>
-                            <select
+                            {/* <select
                             className="form-control form-control-sm" 
                                 value={categoryId}
                                 onChange={onCategoryChange}
@@ -84,7 +98,14 @@ const NewPage = () => {
                                         <option key={cat._id} value={cat._id}>{cat.name}</option>
                                     )
                                 }
-                            </select>
+                            </select> */}
+                            <Input
+                                type="select"
+                                value={categoryId}
+                                onChange={onCategoryChange}
+                                options={categories}
+                                placeholder={'Select Category'} 
+                            />
                         </Col>
                     </Row>
                     <Row>
@@ -150,8 +171,19 @@ const NewPage = () => {
     }
     return (
         <Layout sidebar>
-            {renderCreatePageModal()}
-            <button onClick={() => setCreateModal(true)}>Create Page</button>
+            {
+                page.loading ?
+                <>
+                    <Spinner animation="border" role="status">
+                        <span className="sr-only">Loading...</span>
+                    </Spinner>
+                </>
+                :
+                <>
+                    {renderCreatePageModal()}
+                    <button onClick={() => setCreateModal(true)}>Create Page</button>
+                </>
+            }
         </Layout>
     )
 }
