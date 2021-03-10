@@ -32,8 +32,8 @@ const NewPage = () => {
             setTitle('');
             setDesc('');
             setCategoryId('');
-            setProducts('');
-            setBanners('');
+            setProducts([]);
+            setBanners([]);
         }
     }, [page]);
 
@@ -64,7 +64,6 @@ const NewPage = () => {
         form.append('title', title);
         form.append('description', desc);
         form.append('category', categoryId);
-        form.append('type', type);
         banners.forEach((banner, index) => {
             form.append('banners', banner);
         });
