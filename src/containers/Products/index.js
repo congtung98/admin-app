@@ -23,7 +23,7 @@ const Products = () => {
     const product = useSelector(state => state.product);
     const dispatch = useDispatch();
 
-    const handleClose = () => {
+    const handleSave = () => {
 
         const form = new FormData();
         form.append('name', name);
@@ -95,7 +95,8 @@ const Products = () => {
         return (
             <Modal
                 show={show}
-                handleClose={handleClose}
+                handleClose={() => setShow(false)}
+                handleSave={handleSave}
                 modalTitle={'Add New Product'}
             >
                 <Input
