@@ -21,11 +21,56 @@ const Orders = (props) => {
         dispatch(updateOrder(payload));
     }
 
+    const formatDate = (date) => {
+        if(date){
+            const d = new Date(date);
+            return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+        }
+        return "";
+    };
     return (
         <Layout sidebar>
             {
                 order.orders.map((orderItem, index) => (
-                    <Card key={index} headerLeft={orderItem._id}>
+                    <Card
+                        style={{
+                            margin: "10px 0"
+                        }} 
+                        key={index} 
+                        headerLeft={orderItem._id}
+                    >
+                        <div
+                            style={{
+                                justifyContent: "space-between",
+                                padding: "50px 50px",
+                                display: "flex",
+                                alignItems: "center"
+                            }}
+                        >
+                            <div>
+                                <div className="title">Items</div>
+                                {orderItem.items.map((item, index) => (
+                                    <div className="value" key={index}>
+                                        {item.productId.name}
+                                    </div>
+                                ))}
+                            </div>
+                            <div>
+                                <span className="title">Total Price</span>
+                                <br/>
+                                <span className="value">{orderItem.totalAmount}</span>
+                            </div>
+                            <div>
+                                <span className="title">Payment Type</span>
+                                <br/>
+                                <span className="value">{orderItem.paymentType}</span>
+                            </div>
+                            <div>
+                                <span className="title">Payment Status</span>
+                                <br/>
+                                <span className="value">{orderItem.paymentStatus}</span>
+                            </div>
+                        </div>
                         <div
                             style={{
                                 boxSizing: "border-box",
@@ -35,14 +80,23 @@ const Orders = (props) => {
                             }}
                         >
                             <div className="orderTrack">
-                                <div className="orderStatus">
-                                    <div className="point"></div>
-                                    <div className="orderInfo">
-                                        <div className="status">Ordered</div>
-                                        <div className="date">Fri, 2021</div>
+                                {orderItem.orderStatus.map((status) => (
+                                    <div 
+                                        className={`orderStatus ${
+                                            status.isCompleted ? "active" : ""
+                                        }`}
+                                    >
+                                        <div 
+                                            className={`point ${status.isCompleted ? "active" : ""}`}
+                                        ></div>
+                                        <div className="orderInfo">
+                                            <div className="status">{status.type}</div>
+                                            <div className="date">{formatDate(status.date)}</div>
+                                        </div>
                                     </div>
-                                </div>
-                                <div className="orderStatus">
+                                ))
+                                }
+                                {/* <div className="orderStatus">
                                     <div className="point"></div>
                                     <div className="orderInfo">
                                         <div className="status">Packed</div>
@@ -62,7 +116,7 @@ const Orders = (props) => {
                                         <div className="status">Delivered</div>
                                         <div className="date">Fri, 2021</div>
                                     </div>
-                                </div>
+                                </div> */}
                             </div>
                             {/* select input to apply order action */}
                             <div style={{
@@ -83,8 +137,7 @@ const Orders = (props) => {
                                                             {status.type}
                                                         </option>
                                                     ) : null
-                                                }
-                                            
+                                                }                        
                                             </>
                                         );
                                     })}
