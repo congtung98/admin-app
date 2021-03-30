@@ -3,7 +3,7 @@ import Layout from '../../components/Layout';
 import { Container, Row, Col, Table } from 'react-bootstrap';
 import Input from '../../components/UI/Input';
 import { useDispatch, useSelector } from 'react-redux';
-import { addProduct } from '../../redux/actions';
+import { addProduct, deleteProductById } from '../../redux/actions';
 import Modal from '../../components/UI/Modal';
 import './style.css';
 import { generatePublicUrl } from '../../urlConfig';
@@ -76,16 +76,30 @@ const Products = () => {
                     {
                         product.products.length > 0 ?
                         product.products.map(product =>
-                            <tr onClick={() => showProductDetailsModal(product)} key={product._id}>
+                            <tr key={product._id}>
                                 <td>1</td>
                                 <td>{product.name}</td>
                                 <td>{product.price}</td>
                                 <td>{product.quantity}</td>
                                 <td>{product.category.name}</td>
+                                <td>
+                                    <button onClick={() => showProductDetailsModal(product)}>
+                                        Info
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            const payload = {
+                                                productId: product._id,
+                                            };
+                                            dispatch(deleteProductById(payload));
+                                        }}
+                                    >
+                                        Delete
+                                    </button>
+                                </td>
                             </tr>
                         ) : null
                     }
-                
                 </tbody>
             </Table>
         )

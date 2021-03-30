@@ -6,6 +6,7 @@ import { Redirect } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { signup } from '../../redux/actions';
 import { useDispatch } from 'react-redux';
+import { useEffect } from 'react';
 
 const Signup = () => {
 
@@ -17,6 +18,15 @@ const Signup = () => {
     const auth = useSelector(state => state.auth);
     const user = useSelector(state => state.user);
     const dispatch = useDispatch();
+
+    useEffect(() => {
+        if(!user.loading){
+            setFirstName("");
+            setLastName("");
+            setEmail("");
+            setPassword("");
+        }
+    }, [user.loading]);
 
     const userSignup = (e) => {
 
