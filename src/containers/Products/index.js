@@ -3,10 +3,13 @@ import Layout from '../../components/Layout';
 import { Container, Row, Col, Table } from 'react-bootstrap';
 import Input from '../../components/UI/Input';
 import { useDispatch, useSelector } from 'react-redux';
-import { addProduct, deleteProductById } from '../../redux/actions';
+import { addProduct, deleteProductById, updateProduct } from '../../redux/actions';
 import Modal from '../../components/UI/Modal';
 import './style.css';
 import { generatePublicUrl } from '../../urlConfig';
+import { IoIosCreate, IoIosSearch, IoIosTrash, IoMdInformationCircleOutline } from 'react-icons/io'
+import UpdateProductsModal from './components/UpdateProductsModal';
+import { useEffect } from 'react';
 
 const Products = () => {
 
@@ -19,9 +22,24 @@ const Products = () => {
     const [show, setShow] = useState(false);
     const [productDetailModal, setProductDetailModal] = useState(false);
     const [productDetails, setProductDetails] = useState(null);
+    const [updateProductModal, setUpdateProductModal] = useState(false);
+    const [search, setSearch] = useState('');
+    const [isSearch, setIsSearch] = useState(false);
+    const [searchProduct, setSearchProduct] = useState([]);
     const category = useSelector(state => state.category);
     const product = useSelector(state => state.product);
     const dispatch = useDispatch();
+
+    useEffect(() => {
+        const searchProduct = product.products.filter((item) => {
+            return item.name.toLowerCase().includes(search.toLowerCase())
+        })
+        setSearchProduct(searchProduct);
+    }, [search]);
+
+    useEffect(() => {
+        console.log(searchProduct, 'ok');
+    }, [searchProduct]);
 
     const handleSave = () => {
 
@@ -40,6 +58,33 @@ const Products = () => {
         
         setShow(false);
     };
+
+    const handleUpdate = () => {
+        let arr = productDetails.productPictures.map(function (obj) {
+            return obj.img;
+        })
+        const form = new FormData();
+        form.append('_id', productDetails._id);
+        form.append('name', productDetails.name);
+        form.append('quantity', productDetails.quantity);
+        form.append('price', productDetails.price);
+        form.append('description', productDetails.description);
+        form.append('category', productDetails.category._id);
+        form.append('productPictures', arr);
+
+        console.log(arr);
+        for(let pic of productPictures){
+            form.append('productPicture', pic);
+        }
+        for (let [key, value] of form) {
+            console.log(`${value}`)
+          }
+        dispatch(updateProduct(form));
+        
+        setUpdateProductModal(false);
+        setProductPictures([]);
+    };
+
     const handleShow = () => setShow(true);
 
     const createCategoryList = (categories, options = []) => {
@@ -60,7 +105,32 @@ const Products = () => {
         ]);
     }
 
+    // const handleEditProductPictures = (e) => {
+    //     console.log(e.target.files[0]);
+    //     setProductDetails({ ...productDetails, productPictures: [...productDetails.productPictures, e.target.files[0]]});
+    // }
+
+    const deleteProductPictures = (index) => {
+        console.log('vao khong?', index, productPictures);
+        productDetails.productPictures.splice(index, 1);
+        const updatedProduct = { ...productDetails, productPictures : productDetails.productPictures }
+        setProductDetails(updatedProduct);
+    }
+
+    const deleteAddProductPictures = (index) => {
+        console.log('alo', index, productPictures);
+        productPictures.splice(index, 1);
+        const _newProductPictures = productPictures;
+        setProductPictures([..._newProductPictures]);
+    }
+
     const renderProducts = () => {
+        let products = [];
+        if(isSearch){
+            products = searchProduct;
+        }else{
+            products = product.products;
+        }
         return (
             <Table style={{ fontSize: 12 }} responsive="sm">
                 <thead>
@@ -74,17 +144,20 @@ const Products = () => {
                 </thead>
                 <tbody>
                     {
-                        product.products.length > 0 ?
-                        product.products.map(product =>
+                        products.length > 0 ?
+                        products.map(product =>
                             <tr key={product._id}>
-                                <td>1</td>
+                                <td>{products.indexOf(product) + 1}</td>
                                 <td>{product.name}</td>
                                 <td>{product.price}</td>
                                 <td>{product.quantity}</td>
                                 <td>{product.category.name}</td>
-                                <td>
+                                <td style={{ justifyContent: "center", alignItems: "center" }}>
                                     <button onClick={() => showProductDetailsModal(product)}>
-                                        Info
+                                        <IoMdInformationCircleOutline color="green" size={20} />
+                                    </button>
+                                    <button onClick={() => showUpdateProductModal(product)}>
+                                        <IoIosCreate color="green" size={20} />
                                     </button>
                                     <button
                                         onClick={() => {
@@ -94,7 +167,7 @@ const Products = () => {
                                             dispatch(deleteProductById(payload));
                                         }}
                                     >
-                                        Delete
+                                        <IoIosTrash color="red" size={20}/>
                                     </button>
                                 </td>
                             </tr>
@@ -167,6 +240,17 @@ const Products = () => {
         setProductDetails(product);
         setProductDetailModal(true);
     }
+
+    const showUpdateProductModal = (product) => {
+        setProductDetails(product);
+        setUpdateProductModal(true);
+    }
+
+    const handleProductInput = (key, value) => {
+        const updatedProduct = { ...productDetails, [key] : value }
+        setProductDetails(updatedProduct);
+    }
+
     const renderProductDetailsModal = () => {
 
         if(!productDetails) {
@@ -222,6 +306,15 @@ const Products = () => {
         )
     }
 
+    const productFilterBySearch = (e) => {
+        setSearch(e.target.value);
+        if(e.target.value === ''){
+            setIsSearch(false);
+        }else{
+            setIsSearch(true);
+        }
+    }
+    console.log(product, '=');
     return (
         <Layout sidebar>
             <Container>
@@ -230,6 +323,14 @@ const Products = () => {
                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                             <h3>Product</h3>
                             <button onClick={handleShow}>Add</button>
+                        </div>
+                        <div className="searchInputContainer">
+                            <input type="text" className="searchInput" onChange={(e) => productFilterBySearch(e)} value={search} placeholder="Search for names.."></input>
+                            <div className="searchIconContainer">
+                                <IoIosSearch style={{
+                                    color: '#2874f0'
+                                }} />
+                            </div>
                         </div>
                     </Col>
                 </Row>
@@ -241,6 +342,23 @@ const Products = () => {
             </Container>
             {renderAddProductModal()}
             {renderProductDetailsModal()}
+            <UpdateProductsModal
+                show={updateProductModal}
+                handleClose={() => {setUpdateProductModal(false)}}
+                handleSave={handleUpdate}
+                modalTitle={'Update Product'}
+                size="lg"
+                // expandedArray={expandedArray}
+                // checkedArray={checkedArray}
+                handleProductInput={handleProductInput}
+                // categoryList={categoryList}
+                productPictures={productPictures}
+                handleProductPictures={handleProductPictures}
+                deleteProductPictures={deleteProductPictures}
+                deleteAddProductPictures={deleteAddProductPictures}
+                createCategoryList={createCategoryList}
+                product={productDetails}
+            />
         </Layout>
     )
 }

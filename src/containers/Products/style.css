@@ -18,3 +18,26 @@
     max-height: 100%;
     object-fit: contain;
 }
+.searchInputContainer {
+    width: 560px;
+    position: relative;
+    background: #fff;
+    height: 36px;
+    border-radius: 1px;
+    overflow: hidden;
+    display: flex;
+  }
+.searchInput {
+    width: 518px;
+    border: 0;
+    height: 36px;
+    outline: none;
+    box-sizing: border-box;
+    padding: 0 10px;
+}
+.searchIconContainer {
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    align-items: center;
+}
