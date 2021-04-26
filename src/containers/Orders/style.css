@@ -43,3 +43,11 @@
     font-size: 12px;
     text-transform: capitalize;
 }
+.date{
+    margin-top: 20px;
+    white-space: nowrap;
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}

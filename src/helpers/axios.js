@@ -29,7 +29,7 @@ axiosInstance.interceptors.response.use((res) => {
         localStorage.clear();
         store.dispatch({ type: authConstants.LOGOUT_SUCCESS });
     }
-    return Promise.reject(error);
+    return error.response;
 })
 
 export default axiosInstance;

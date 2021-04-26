@@ -22,9 +22,15 @@ const Orders = (props) => {
     }
 
     const formatDate = (date) => {
+        console.log(date, 'DATE');
         if(date){
             const d = new Date(date);
-            return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+            return (
+                <>
+                    <p style={{ margin: 0 }}>{d.getDate()}-{d.getMonth() + 1}-{d.getFullYear()}</p>
+                    <p>{d.getHours()}:{d.getMinutes()}</p>
+                </>
+            );
         }
         return "";
     };

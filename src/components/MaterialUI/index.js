@@ -92,33 +92,33 @@ const MaterialButton = (props) => {
     )
 }
 
-const DropdownMenu = (props) => {
-    return (
-      <div className="headerDropdownContainer">
-        {props.menu}
-        <div className="dropdown">
-          <div className="upArrow"></div>
-          {props.firstMenu}
-          <ul className="headerDropdownMenu">
-            {
-              props.menus && props.menus.map((item, index) =>
-                <li key={index}>
-                    <a onClick={(e) => {
-                        if(item.onClick){
-                            e.preventDefault();
-                            item.onClick && item.onClick();
-                        }
-                    }} 
-                        href={item.href}>{item.label}
-                    </a>
-                </li>
-              )
-            }
-          </ul>
-        </div>
-      </div>
-    );
-}
+// const DropdownMenu = (props) => {
+//     return (
+//       <div className="headerDropdownContainer">
+//         {props.menu}
+//         <div className="dropdown">
+//           <div className="upArrow"></div>
+//           {props.firstMenu}
+//           <ul className="headerDropdownMenu">
+//             {
+//               props.menus && props.menus.map((item, index) =>
+//                 <li key={index}>
+//                     <a onClick={(e) => {
+//                         if(item.onClick){
+//                             e.preventDefault();
+//                             item.onClick && item.onClick();
+//                         }
+//                     }} 
+//                         href={item.href}>{item.label}
+//                     </a>
+//                 </li>
+//               )
+//             }
+//           </ul>
+//         </div>
+//       </div>
+//     );
+// }
 
 const Anchor = (props) => {
     return (
@@ -149,7 +149,7 @@ export {
     Modal,
     MaterialInput,
     MaterialButton,
-    DropdownMenu,
+    // DropdownMenu,
     Anchor,
     Breed
 }

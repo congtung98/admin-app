@@ -92,7 +92,7 @@
     display: flex;
     justify-content: space-between;
   }
-.dropdown{
+/* .dropdown{
     right: 50%;
     position: absolute;
     width: 240px;
@@ -103,7 +103,7 @@
     z-index: 1;
     margin-top: 12px;
     display: none;
-}
+} */
 .headerDropdownContainer:hover .dropdown{
     display: block;
 }

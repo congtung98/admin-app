@@ -51,7 +51,7 @@ const Signup = () => {
         <Layout>
             <Container>
                 { user.message }
-                <Row style={{ marginTop: '50px' }}>
+                <Row style={{ marginTop: '150px' }}>
                     <Col md={{ span: 6, offset: 3 }}>
                         <Form onSubmit={userSignup}>
                             <Row>
@@ -93,6 +93,7 @@ const Signup = () => {
                             <Button variant="primary" type="submit">
                                 Submit
                             </Button>
+                            { user.error ? <p style={{ color: "red" }}> {user.error} </p> : null }
                         </Form>
                     </Col>
                 </Row>
