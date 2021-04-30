@@ -1,5 +1,6 @@
 import axios from "../../helpers/axios";
 import { orderConstants, pageConstants } from "./constants";
+import { getProducts } from "./product.actions";
 
 export const getCustomerOrders = () => {
     return async (dispatch) => {
@@ -26,6 +27,7 @@ export const getCustomerOrders = () => {
 };
 
 export const updateOrder = (payload) => {
+    console.log(payload, 'tung');
     return async dispatch => {
         dispatch({ type: orderConstants.UPDATE_CUSTOMER_ORDER_REQUEST });
         try{
@@ -36,6 +38,7 @@ export const updateOrder = (payload) => {
                     type: orderConstants.UPDATE_CUSTOMER_ORDER_SUCCESS
                 });
                 dispatch(getCustomerOrders());
+                dispatch(getProducts())
             }else{
                 const { error } = res.data;
                 dispatch({

@@ -3,16 +3,21 @@ import Layout from '../../components/Layout';
 import { Container, Row, Col, Table } from 'react-bootstrap';
 import Input from '../../components/UI/Input';
 import { useDispatch, useSelector } from 'react-redux';
-import { addProduct, deleteProductById, updateProduct } from '../../redux/actions';
+import { addProduct, addSmartPhoneProductDetails, deleteProductById, getSmartPhoneProductDetailsById, updateProduct } from '../../redux/actions';
 import Modal from '../../components/UI/Modal';
 import './style.css';
 import { generatePublicUrl } from '../../urlConfig';
 import { IoIosCreate, IoIosSearch, IoIosTrash, IoMdInformationCircleOutline } from 'react-icons/io'
 import UpdateProductsModal from './components/UpdateProductsModal';
 import { useEffect } from 'react';
+import ListProductDetails from './components/ListProductDetails';
+import { smartPhoneCat } from './constant';
+import Pagination from './components/Pagination';
 
 const Products = () => {
 
+    const [currentPage, setCurrentPage] = useState(1);
+    const [productsPerPage] = useState(10);
     const [name, setName] = useState('');
     const [quantity, setQuantity] = useState('');
     const [price, setPrice] = useState('');
@@ -26,6 +31,18 @@ const Products = () => {
     const [search, setSearch] = useState('');
     const [isSearch, setIsSearch] = useState(false);
     const [searchProduct, setSearchProduct] = useState([]);
+    const [alertDelete, setAlertDelete] = useState(false);
+    const [deleteProduct, setDeleteProduct] = useState('');
+    const [smartPhone, setSmartPhone] = useState(false);
+    const [ram, setRam] = useState('');
+    const [storage, setStorage] = useState('');
+    const [capacity, setCapacity] = useState('');
+    const [resolutionType, setResolutionType] = useState('');
+    const [primaryCamera, setPrimaryCamera] = useState('');
+    const [secondaryCamera, setSecondaryCamera] = useState('');
+    const [color, setColor] = useState('');
+    const [screenSize, setScreenSize] = useState('');
+    const [productId, setProductID] = useState('');
     const category = useSelector(state => state.category);
     const product = useSelector(state => state.product);
     const dispatch = useDispatch();
@@ -40,6 +57,14 @@ const Products = () => {
     useEffect(() => {
         console.log(searchProduct, 'ok');
     }, [searchProduct]);
+
+    // Get current posts
+  const indexOfLastProd = currentPage * productsPerPage;
+  const indexOfFirstProd = indexOfLastProd - productsPerPage;
+  const currentProd = product.products.slice(indexOfFirstProd, indexOfLastProd);
+
+  // Change page
+  const paginate = pageNumber => setCurrentPage(pageNumber);
 
     const handleSave = () => {
 
@@ -58,6 +83,24 @@ const Products = () => {
         
         setShow(false);
     };
+
+    const handleAddSmartPhone = () => {
+        const payload = {
+            quantity,
+            ram,
+            storage,
+            capacity,
+            resolutionType,
+            primaryCamera,
+            secondaryCamera,
+            color,
+            screenSize,
+            product: productId,
+        }
+        dispatch(addSmartPhoneProductDetails(payload));
+
+        setShow(false);
+    }
 
     const handleUpdate = () => {
         let arr = productDetails.productPictures.map(function (obj) {
@@ -124,57 +167,90 @@ const Products = () => {
         setProductPictures([..._newProductPictures]);
     }
 
+    const renderProductDetails = (p) => {
+        const smartPhoneCategory = smartPhoneCat;
+        console.log(p, smartPhoneCategory);
+        if(smartPhoneCategory.includes(p.category.name)){
+            dispatch(getSmartPhoneProductDetailsById(p));
+            setSmartPhone(true);
+        }
+    }
+
+    const renderVariantProducts = () => {
+        if(smartPhone){
+            return <ListProductDetails 
+                        type="smartPhone" 
+                        showProductDetailsModal={showProductDetailsModal}
+                        showUpdateProductModal={showUpdateProductModal}
+                        productId={productId}
+                    />
+        }else return null;
+    }
+
     const renderProducts = () => {
         let products = [];
         if(isSearch){
             products = searchProduct;
         }else{
-            products = product.products;
+            products = currentProd;
         }
         return (
-            <Table style={{ fontSize: 12 }} responsive="sm">
-                <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Name</th>
-                    <th>Price</th>
-                    <th>Quantity</th>
-                    <th>Category</th>
-                </tr>
-                </thead>
-                <tbody>
-                    {
-                        products.length > 0 ?
-                        products.map(product =>
-                            <tr key={product._id}>
-                                <td>{products.indexOf(product) + 1}</td>
-                                <td>{product.name}</td>
-                                <td>{product.price}</td>
-                                <td>{product.quantity}</td>
-                                <td>{product.category.name}</td>
-                                <td style={{ justifyContent: "center", alignItems: "center" }}>
-                                    <button onClick={() => showProductDetailsModal(product)}>
-                                        <IoMdInformationCircleOutline color="green" size={20} />
-                                    </button>
-                                    <button onClick={() => showUpdateProductModal(product)}>
-                                        <IoIosCreate color="green" size={20} />
-                                    </button>
-                                    <button
+            <>
+                <Table style={{ fontSize: 12 }} responsive="sm">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Category</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        {
+                            products.length > 0 ?
+                            products.map(product =>
+                                <tr key={product._id}>
+                                    <td>{products.indexOf(product) + 1}</td>
+                                    <td
+                                        style={{ cursor: 'pointer' }}
                                         onClick={() => {
-                                            const payload = {
-                                                productId: product._id,
-                                            };
-                                            dispatch(deleteProductById(payload));
-                                        }}
-                                    >
-                                        <IoIosTrash color="red" size={20}/>
-                                    </button>
-                                </td>
-                            </tr>
-                        ) : null
-                    }
-                </tbody>
-            </Table>
+                                            setProductID(product._id)
+                                            renderProductDetails(product)
+                                        }}>{product.name}</td>
+                                    <td>{product.price}</td>
+                                    <td>{product.quantity}</td>
+                                    <td>{product.category.name}</td>
+                                    <td style={{ justifyContent: "center", alignItems: "center" }}>
+                                        <button onClick={() => showProductDetailsModal(product)}>
+                                            <IoMdInformationCircleOutline color="green" size={20} />
+                                        </button>
+                                        <button onClick={() => showUpdateProductModal(product)}>
+                                            <IoIosCreate color="green" size={20} />
+                                        </button>
+                                        <button
+                                            onClick={() => {
+                                                const payload = {
+                                                    productId: product._id,
+                                                };
+                                                showAlertDeleteModal(payload);      
+                                            }}
+                                        >
+                                            <IoIosTrash color="red" size={20}/>
+                                        </button>
+                                    </td>
+                                </tr>
+                            ) : null
+                        }
+                    </tbody>
+                </Table>
+                <Pagination
+                    prodsPerPage={productsPerPage}
+                    totalProds={product.products.length}
+                    paginate={paginate}
+                    currentPage={currentPage}
+                />
+            </>
         )
     }
 
@@ -228,6 +304,76 @@ const Products = () => {
                 }
 
                 <input type="file" name="productPicture" onChange={handleProductPictures} />
+            </Modal>
+        )
+    }
+
+    const renderAddSmartPhoneDetailsModal = () => {
+        return (
+            <Modal
+                show={show}
+                handleClose={() => setShow(false)}
+                handleSave={handleAddSmartPhone}
+                modalTitle={'Add New Variant Product'}
+            >
+                <Input
+                    label="Quantity"
+                    value={quantity}
+                    placeholder={`Quantity`}
+                    onChange={(e) => setQuantity(e.target.value)}
+                />
+                <Input
+                    type="select"
+                    options={[ { value: '2 GB', name: '2 GB' }, { value: '4 GB', name: '4 GB' }, { value: '6 GB', name: '6 GB'}, { value: '8 GB', name: '8 GB'}]}
+                    label="RAM"
+                    value={ram}
+                    placeholder={`RAM of product`}
+                    onChange={(e) => setRam(e.target.value)}
+                />
+                <Input
+                    type="select"
+                    options={[ { value: '16 GB', name: '16 GB' }, { value: '32 GB', name: '32 GB' }, { value: '64 GB', name: '64 GB'} ]}
+                    label="Storage"
+                    value={storage}
+                    placeholder={`Storage of product`}
+                    onChange={(e) => setStorage(e.target.value)}
+                />
+                <Input
+                    label="Capacity"
+                    value={capacity}
+                    placeholder={`Capacity of battery`}
+                    onChange={(e) => setCapacity(e.target.value)}
+                />
+                <Input
+                    label="Resolution Type"
+                    value={resolutionType}
+                    placeholder={`Resolution of screen`}
+                    onChange={(e) => setResolutionType(e.target.value)}
+                />
+                <Input
+                    label="Primary Camera"
+                    value={primaryCamera}
+                    placeholder={`Primary camera of product`}
+                    onChange={(e) => setPrimaryCamera(e.target.value)}
+                />
+                <Input
+                    label="Secondary Camera"
+                    value={secondaryCamera}
+                    placeholder={`Secondary camera of product`}
+                    onChange={(e) => setSecondaryCamera(e.target.value)}
+                />
+                <Input
+                    label="Color"
+                    value={color}
+                    placeholder={`Color of product`}
+                    onChange={(e) => setColor(e.target.value)}
+                />
+                <Input
+                    label="Screen Size"
+                    value={screenSize}
+                    placeholder={`Size of screen`}
+                    onChange={(e) => setScreenSize(e.target.value)}
+                />
             </Modal>
         )
     }
@@ -306,6 +452,39 @@ const Products = () => {
         )
     }
 
+    const onDelete = () => {
+        dispatch(deleteProductById(deleteProduct));
+        setAlertDelete(false);
+    }
+
+    const onCloseDeleteModal = () => {
+        setAlertDelete(false);
+    }
+
+    const renderAlertDeleteModal = () => {
+        return (
+            <Modal
+                show={alertDelete}
+                handleClose={() => setAlertDelete(false)}
+                modalTitle={'Confirm'}
+                 buttons={[
+                {
+                    label: 'No',
+                    color: 'primary',
+                    onClick: onCloseDeleteModal
+                },
+                {
+                    label: 'Yes',
+                    color: 'danger',
+                    onClick: onDelete
+                }
+            ]}
+            >
+                Are you sure to delete this product?
+            </Modal>
+        )
+    }
+
     const productFilterBySearch = (e) => {
         setSearch(e.target.value);
         if(e.target.value === ''){
@@ -314,7 +493,12 @@ const Products = () => {
             setIsSearch(true);
         }
     }
-    console.log(product, '=');
+
+    const showAlertDeleteModal = (payload) => {
+        setAlertDelete(true);
+        setDeleteProduct(payload);
+    }
+
     return (
         <Layout sidebar>
             <Container>
@@ -324,6 +508,9 @@ const Products = () => {
                             <h3>Product</h3>
                             <button onClick={handleShow}>Add</button>
                         </div>
+                        {
+                            smartPhone ? <button onClick={() => setSmartPhone(false)}>Go back</button> : null
+                        }
                         <div className="searchInputContainer">
                             <input type="text" className="searchInput" onChange={(e) => productFilterBySearch(e)} value={search} placeholder="Search for names.."></input>
                             <div className="searchIconContainer">
@@ -335,13 +522,14 @@ const Products = () => {
                     </Col>
                 </Row>
                 <Row>
-                    <Col>
-                        {renderProducts()}
+                    <Col style={{ height: 600 }}>
+                        { smartPhone ? renderVariantProducts() : renderProducts()}
                     </Col>
                 </Row>
             </Container>
-            {renderAddProductModal()}
+            { smartPhone ? renderAddSmartPhoneDetailsModal() : renderAddProductModal()}
             {renderProductDetailsModal()}
+            {renderAlertDeleteModal()}
             <UpdateProductsModal
                 show={updateProductModal}
                 handleClose={() => {setUpdateProductModal(false)}}

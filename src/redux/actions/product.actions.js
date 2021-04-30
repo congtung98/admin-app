@@ -1,7 +1,7 @@
 import axios from "../../helpers/axios";
 import { productConstants } from "./constants";
 
-const getProducts = () => {
+export const getProducts = () => {
     return async (dispatch) => {
         try{
             dispatch({ type: productConstants.GET_ALL_PRODUCT_REQUEST });
@@ -76,6 +76,73 @@ export const updateProduct = form => {
                 dispatch(getProducts());
             }else{
                 dispatch({ type: productConstants.UPDATE_PRODUCT_FAILURE });
+            }
+        }catch(error){
+            console.log(error);
+        }
+    };
+};
+
+export const getSmartPhoneProductDetailsById = (product) => {
+    return async dispatch => {
+        let res;
+        dispatch({ type: productConstants.GET_SMART_PHONE_PRODUCT_DETAILS_BY_ID_REQUEST });
+        try {
+            const { _id } = product;
+            res = await axios.get(`/product/smartPhone/${_id}`);
+            dispatch({
+                type: productConstants.GET_SMART_PHONE_PRODUCT_DETAILS_BY_ID_SUCCESS,
+                payload: { productDetails: res.data.product }
+            });
+            console.log(_id, res);
+        }catch(error){
+            console.log(error);
+            dispatch({
+                type: productConstants.GET_SMART_PHONE_PRODUCT_DETAILS_BY_ID_FAILURE,
+                payload: { error: res.data.error }
+            })
+        }
+    }
+}
+
+export const addSmartPhoneProductDetails = (payload) => {
+    const { product } = payload;
+    return async (dispatch) => {
+        try{
+            dispatch({ type: productConstants.ADD_SMART_PHONE_PRODUCT_REQUEST });
+            const res = await axios.post(`product/editSmartPhoneProductDetail`, { ...payload });
+            console.log(payload, 'smartphone payload');
+            if(res.status === 201){
+                dispatch({ type: productConstants.ADD_SMART_PHONE_PRODUCT_SUCCESS });
+                dispatch(getSmartPhoneProductDetailsById({ _id: product }));
+            }else{
+                dispatch({ type: productConstants.ADD_SMART_PHONE_PRODUCT_FAILURE });
+            }
+        }catch(error){
+            console.log(error);
+        }
+    };
+}
+
+export const deleteSmartPhoneProductById = (payload) => {
+    const { product } = payload;
+    return async (dispatch) => {
+        try{
+            const res = await axios.delete(`product/deleteSmartPhoneProductById`, {
+                data: {payload}
+            });
+            dispatch({ type: productConstants.DELETE_SMART_PHONE_PRODUCT_BY_ID_REQUEST })
+            if(res.status === 202){
+                dispatch({ type: productConstants.DELETE_SMART_PHONE_PRODUCT_BY_ID_SUCCESS });
+                dispatch(getSmartPhoneProductDetailsById({ _id: product }));
+            }else{
+                const { error } = res.data;
+                dispatch({
+                    type: productConstants.DELETE_SMART_PHONE_PRODUCT_BY_ID_FAILURE,
+                    payload: {
+                        error,
+                    },
+                });
             }
         }catch(error){
             console.log(error);

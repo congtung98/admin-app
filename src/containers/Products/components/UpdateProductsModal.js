@@ -24,7 +24,6 @@ const UpdateProductsModal = (props) => {
         product
     } = props;
 
-    console.log(productPictures);
     // const [newProductPictures, setNewProductPictures] = useState('');
     const category = useSelector(state => state.category);
 

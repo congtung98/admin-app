@@ -13,10 +13,11 @@ const Orders = (props) => {
     const [type, setType] = useState('');
     const dispatch = useDispatch();
 
-    const onOrderUpdate = (orderId) => {
+    const onOrderUpdate = (orderId, items) => {
         const payload = {
             orderId,
-            type 
+            type,
+            items 
         };
         dispatch(updateOrder(payload));
     }
@@ -61,6 +62,14 @@ const Orders = (props) => {
                                     </div>
                                 ))}
                             </div>
+                            <div style={{ textAlign: 'center' }}>
+                                <span className="title">Quantity</span>
+                                {orderItem.items.map((item, index) => (
+                                    <div className="value" key={index}>
+                                        {item.purchasedQty}
+                                    </div>
+                                ))}
+                            </div>
                             <div>
                                 <span className="title">Total Price</span>
                                 <br/>
@@ -102,27 +111,6 @@ const Orders = (props) => {
                                     </div>
                                 ))
                                 }
-                                {/* <div className="orderStatus">
-                                    <div className="point"></div>
-                                    <div className="orderInfo">
-                                        <div className="status">Packed</div>
-                                        <div className="date">Fri, 2021</div>
-                                    </div>
-                                </div>
-                                <div className="orderStatus">
-                                    <div className="point"></div>
-                                    <div className="orderInfo">
-                                        <div className="status">Shipped</div>
-                                        <div className="date">Fri, 2021</div>
-                                    </div>
-                                </div>
-                                <div className="orderStatus">
-                                    <div className="point"></div>
-                                    <div className="orderInfo">
-                                        <div className="status">Delivered</div>
-                                        <div className="date">Fri, 2021</div>
-                                    </div>
-                                </div> */}
                             </div>
                             {/* select input to apply order action */}
                             <div style={{
@@ -154,7 +142,7 @@ const Orders = (props) => {
                                 padding: "0 50px",
                                 boxSizing: "border-box"
                             }}>
-                                <button onClick={() => onOrderUpdate(orderItem._id)}>Confirm</button>
+                                <button onClick={() => onOrderUpdate(orderItem._id, orderItem.items)}>Confirm</button>
                             </div>
                         </div>
                     </Card>
