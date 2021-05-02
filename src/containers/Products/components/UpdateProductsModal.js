@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux';
 import { MaterialButton } from '../../../components/MaterialUI';
 import Input from '../../../components/UI/Input';
 import Modal from '../../../components/UI/Modal'
+import { clothingCat, smartPhoneCat } from '../constant';
 
 const UpdateProductsModal = (props) => {
     const {
@@ -59,6 +60,7 @@ const UpdateProductsModal = (props) => {
                     onChange={(e) => handleProductInput('name', e.target.value)}
                 />
                 <Input
+                    disabled={smartPhoneCat.includes(product.category.name) || clothingCat.includes(product.category.name)}
                     label="Quantity"
                     value={product.quantity}
                     placeholder={`Quantity`}

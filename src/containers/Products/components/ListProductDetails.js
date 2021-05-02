@@ -7,7 +7,7 @@ import { deleteSmartPhoneProductById } from '../../../redux/actions';
 
 const ListProductDetails = (props) => {
 
-    const { showProductDetailsModal, showUpdateProductModal, deleteProductById, productId } = props
+    const { showUpdateProductModal, deleteProductById, productId, showAlertDeleteModal } = props
     
     useEffect(() => {
         console.log(productId, 'Product ID');
@@ -16,7 +16,9 @@ const ListProductDetails = (props) => {
     const dispatch = useDispatch();
     const product = useSelector(state => state.product);
     let smartPhones = [];
-    smartPhones = product.smartPhones
+    let clothing = [];
+    smartPhones = product.smartPhones;
+    clothing = product.clothing;
     switch(props.type){
         case 'smartPhone':
             return  (
@@ -51,9 +53,9 @@ const ListProductDetails = (props) => {
                                     <td>{product.color}</td>
                                     <td>{product.screenSize}</td>                         
                                     <td style={{ justifyContent: "center", alignItems: "center" }}>
-                                        <button onClick={() => showProductDetailsModal(product)}>
+                                        {/* <button onClick={() => showProductDetailsModal(product)}>
                                             <IoMdInformationCircleOutline color="green" size={20} />
-                                        </button>
+                                        </button> */}
                                         <button onClick={() => showUpdateProductModal(product)}>
                                             <IoIosCreate color="green" size={20} />
                                         </button>
@@ -61,9 +63,11 @@ const ListProductDetails = (props) => {
                                             onClick={() => {
                                                 const payload = {
                                                     productId: product._id,
-                                                    product: productId
+                                                    product: productId,
+                                                    type: props.type,
+                                                    quantity: product.quantity
                                                 };
-                                                dispatch(deleteSmartPhoneProductById(payload));
+                                                showAlertDeleteModal(payload); 
                                             }}
                                         >
                                             <IoIosTrash color="red" size={20}/>
@@ -75,6 +79,51 @@ const ListProductDetails = (props) => {
                     </tbody>
                 </Table>
             )
+        case 'clothing':
+            return (
+                <Table style={{ fontSize: 12 }} responsive="sm">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Quantity</th>
+                        <th>Size</th>
+                        <th>Color</th>
+                        <th>Fabric</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        {
+                            clothing.length > 0 ?
+                            clothing.map(product =>
+                                <tr key={product._id}>
+                                    <td>{clothing.indexOf(product) + 1}</td>
+                                    <td>{product.quantity}</td>
+                                    <td>{product.size}</td>
+                                    <td>{product.color}</td>
+                                    <td>{product.fabric}</td>                        
+                                    <td style={{ justifyContent: "center", alignItems: "center" }}>
+                                        <button onClick={() => showUpdateProductModal(product)}>
+                                            <IoIosCreate color="green" size={20} />
+                                        </button>
+                                        <button
+                                            onClick={() => {
+                                                const payload = {
+                                                    productId: product._id,
+                                                    product: productId,
+                                                    type: props.type
+                                                };
+                                                showAlertDeleteModal(payload); 
+                                            }}
+                                        >
+                                            <IoIosTrash color="red" size={20}/>
+                                        </button>
+                                    </td>
+                                </tr>
+                            ) : null
+                        }
+                    </tbody>
+                </Table>
+            ) 
     }
     
 }

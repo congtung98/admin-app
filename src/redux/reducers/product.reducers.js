@@ -3,6 +3,7 @@ import { productConstants } from "../actions/constants";
 const initialState = {
     products: [],
     smartPhones: [],
+    clothing: [],
     loading: false,
     error: null
 };
@@ -25,6 +26,12 @@ export default (state = initialState, action) => {
             state = {
                 ...state,
                 loading: false
+            }
+            break;
+        case productConstants.GET_CLOTHING_PRODUCT_DETAILS_BY_ID_SUCCESS:
+            state = {
+                ...state,
+                clothing: action.payload.productDetails
             }
             break;
         }

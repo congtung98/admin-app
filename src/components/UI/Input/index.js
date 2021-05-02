@@ -28,6 +28,7 @@ const Input = (props) => {
             input = <Form.Group>
                         {props.label && <Form.Label>{props.label}</Form.Label>}
                         <Form.Control 
+                            disabled={props.disabled}
                             type={props.type} 
                             placeholder={props.placeholder}
                             value={props.value}

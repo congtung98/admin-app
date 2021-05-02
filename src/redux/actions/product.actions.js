@@ -115,6 +115,7 @@ export const addSmartPhoneProductDetails = (payload) => {
             if(res.status === 201){
                 dispatch({ type: productConstants.ADD_SMART_PHONE_PRODUCT_SUCCESS });
                 dispatch(getSmartPhoneProductDetailsById({ _id: product }));
+                dispatch(getProducts());
             }else{
                 dispatch({ type: productConstants.ADD_SMART_PHONE_PRODUCT_FAILURE });
             }
@@ -135,10 +136,78 @@ export const deleteSmartPhoneProductById = (payload) => {
             if(res.status === 202){
                 dispatch({ type: productConstants.DELETE_SMART_PHONE_PRODUCT_BY_ID_SUCCESS });
                 dispatch(getSmartPhoneProductDetailsById({ _id: product }));
+                dispatch(getProducts());
             }else{
                 const { error } = res.data;
                 dispatch({
                     type: productConstants.DELETE_SMART_PHONE_PRODUCT_BY_ID_FAILURE,
+                    payload: {
+                        error,
+                    },
+                });
+            }
+        }catch(error){
+            console.log(error);
+        }
+    };
+};
+
+export const getClothingProductDetailsById = (product) => {
+    return async dispatch => {
+        let res;
+        dispatch({ type: productConstants.GET_CLOTHING_PRODUCT_DETAILS_BY_ID_REQUEST });
+        try {
+            const { _id } = product;
+            res = await axios.get(`/product/clothing/${_id}`);
+            dispatch({
+                type: productConstants.GET_CLOTHING_PRODUCT_DETAILS_BY_ID_SUCCESS,
+                payload: { productDetails: res.data.product }
+            });
+            console.log(_id, res);
+        }catch(error){
+            console.log(error);
+            dispatch({
+                type: productConstants.GET_CLOTHING_PRODUCT_DETAILS_BY_ID_FAILURE,
+                payload: { error: res.data.error }
+            })
+        }
+    }
+}
+
+export const addClothingProductDetails = (payload) => {
+    const { product } = payload;
+    return async (dispatch) => {
+        try{
+            dispatch({ type: productConstants.ADD_CLOTHING_PRODUCT_REQUEST });
+            const res = await axios.post(`product/editClothingProductDetail`, { ...payload });
+
+            if(res.status === 201){
+                dispatch({ type: productConstants.ADD_CLOTHING_PRODUCT_SUCCESS });
+                dispatch(getClothingProductDetailsById({ _id: product }));
+            }else{
+                dispatch({ type: productConstants.ADD_CLOTHING_PRODUCT_FAILURE });
+            }
+        }catch(error){
+            console.log(error);
+        }
+    };
+}
+
+export const deleteClothingProductById = (payload) => {
+    const { product } = payload;
+    return async (dispatch) => {
+        try{
+            const res = await axios.delete(`product/deleteClothingProductById`, {
+                data: {payload}
+            });
+            dispatch({ type: productConstants.DELETE_CLOTHING_PRODUCT_BY_ID_REQUEST })
+            if(res.status === 202){
+                dispatch({ type: productConstants.DELETE_CLOTHING_PRODUCT_BY_ID_SUCCESS });
+                dispatch(getClothingProductDetailsById({ _id: product }));
+            }else{
+                const { error } = res.data;
+                dispatch({
+                    type: productConstants.DELETE_CLOTHING_PRODUCT_BY_ID_FAILURE,
                     payload: {
                         error,
                     },

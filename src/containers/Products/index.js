@@ -3,16 +3,18 @@ import Layout from '../../components/Layout';
 import { Container, Row, Col, Table } from 'react-bootstrap';
 import Input from '../../components/UI/Input';
 import { useDispatch, useSelector } from 'react-redux';
-import { addProduct, addSmartPhoneProductDetails, deleteProductById, getSmartPhoneProductDetailsById, updateProduct } from '../../redux/actions';
+import { addClothingProductDetails, addProduct, addSmartPhoneProductDetails, deleteClothingProductById, deleteProductById, deleteSmartPhoneProductById, getClothingProductDetailsById, getSmartPhoneProductDetailsById, updateProduct } from '../../redux/actions';
 import Modal from '../../components/UI/Modal';
 import './style.css';
 import { generatePublicUrl } from '../../urlConfig';
 import { IoIosCreate, IoIosSearch, IoIosTrash, IoMdInformationCircleOutline } from 'react-icons/io'
 import UpdateProductsModal from './components/UpdateProductsModal';
+import UpdateSmartPhoneProductsModal from './components/UpdateSmartPhoneProductsModal';
 import { useEffect } from 'react';
 import ListProductDetails from './components/ListProductDetails';
-import { smartPhoneCat } from './constant';
+import { clothingCat, smartPhoneCat } from './constant';
 import Pagination from './components/Pagination';
+import UpdateClothingProductsModal from './components/UpdateClothingProductsModal';
 
 const Products = () => {
 
@@ -33,6 +35,8 @@ const Products = () => {
     const [searchProduct, setSearchProduct] = useState([]);
     const [alertDelete, setAlertDelete] = useState(false);
     const [deleteProduct, setDeleteProduct] = useState('');
+    
+    //state smartphone
     const [smartPhone, setSmartPhone] = useState(false);
     const [ram, setRam] = useState('');
     const [storage, setStorage] = useState('');
@@ -42,6 +46,16 @@ const Products = () => {
     const [secondaryCamera, setSecondaryCamera] = useState('');
     const [color, setColor] = useState('');
     const [screenSize, setScreenSize] = useState('');
+    const [updateSmartPhoneProductModal, setUpdateSmartPhoneProductModal] = useState(false);
+    const [smartPhoneDetails, setSmartPhoneDetails] = useState(null);
+
+    //state clothing
+    const [clothing, setClothing] = useState(false);
+    const [size, setSize] = useState('');
+    const [fabric, setFabric] = useState('');
+    const [updateClothingProductModal, setUpdateClothingProductModal] = useState(false);
+    const [clothingDetails, setClothingDetails] = useState(null);
+    
     const [productId, setProductID] = useState('');
     const category = useSelector(state => state.category);
     const product = useSelector(state => state.product);
@@ -100,6 +114,32 @@ const Products = () => {
         dispatch(addSmartPhoneProductDetails(payload));
 
         setShow(false);
+        setQuantity('');
+        setRam('');
+        setStorage('');
+        setCapacity('');
+        setResolutionType('');
+        setPrimaryCamera('');
+        setSecondaryCamera('');
+        setColor('');
+        setScreenSize('');
+    }
+
+    const handleAddClothing = () => {
+        const payload = {
+            quantity,
+            size,
+            color,
+            fabric,
+            product: productId,
+        }
+        dispatch(addClothingProductDetails(payload));
+
+        setShow(false);
+        setQuantity('');
+        setSize('');
+        setColor('');
+        setFabric('');
     }
 
     const handleUpdate = () => {
@@ -127,6 +167,18 @@ const Products = () => {
         setUpdateProductModal(false);
         setProductPictures([]);
     };
+
+    const handleUpdateSmartPhone = () => {
+        const payload = smartPhoneDetails;
+        dispatch(addSmartPhoneProductDetails(payload));
+        setUpdateSmartPhoneProductModal(false);
+    }
+
+    const handleUpdateClothing = () => {
+        const payload = clothingDetails;
+        dispatch(addClothingProductDetails(payload));
+        setUpdateClothingProductModal(false);
+    }
 
     const handleShow = () => setShow(true);
 
@@ -169,10 +221,14 @@ const Products = () => {
 
     const renderProductDetails = (p) => {
         const smartPhoneCategory = smartPhoneCat;
-        console.log(p, smartPhoneCategory);
+        const clothingCategory = clothingCat;
+        console.log(p, smartPhoneCategory, clothingCat);
         if(smartPhoneCategory.includes(p.category.name)){
             dispatch(getSmartPhoneProductDetailsById(p));
             setSmartPhone(true);
+        }else if(clothingCategory.includes(p.category.name)){
+            dispatch(getClothingProductDetailsById(p));
+            setClothing(true);
         }
     }
 
@@ -180,9 +236,16 @@ const Products = () => {
         if(smartPhone){
             return <ListProductDetails 
                         type="smartPhone" 
-                        showProductDetailsModal={showProductDetailsModal}
-                        showUpdateProductModal={showUpdateProductModal}
+                        showUpdateProductModal={showUpdateSmartPhoneProductModal}
                         productId={productId}
+                        showAlertDeleteModal={showAlertDeleteModal}
+                    />
+        }else if(clothing){
+            return <ListProductDetails
+                        type="clothing"
+                        showUpdateProductModal={showUpdateClothingProductModal}
+                        productId={productId}
+                        showAlertDeleteModal={showAlertDeleteModal}
                     />
         }else return null;
     }
@@ -216,6 +279,7 @@ const Products = () => {
                                         style={{ cursor: 'pointer' }}
                                         onClick={() => {
                                             setProductID(product._id)
+                                            setProductDetails(product);
                                             renderProductDetails(product)
                                         }}>{product.name}</td>
                                     <td>{product.price}</td>
@@ -316,15 +380,25 @@ const Products = () => {
                 handleSave={handleAddSmartPhone}
                 modalTitle={'Add New Variant Product'}
             >
-                <Input
-                    label="Quantity"
-                    value={quantity}
-                    placeholder={`Quantity`}
-                    onChange={(e) => setQuantity(e.target.value)}
-                />
+                {
+                    productDetails.quantity && product.smartPhones.length === 0 ?
+                    <Input
+                        disabled={true}
+                        label="Quantity"
+                        value={productDetails.quantity}
+                        placeholder={`Quantity`}
+                        onChange={(e) => setQuantity(e.target.value)}
+                    /> :   
+                    <Input
+                        label="Quantity"
+                        value={quantity}
+                        placeholder={`Quantity`}
+                        onChange={(e) => setQuantity(e.target.value)}
+                    />
+                }
                 <Input
                     type="select"
-                    options={[ { value: '2 GB', name: '2 GB' }, { value: '4 GB', name: '4 GB' }, { value: '6 GB', name: '6 GB'}, { value: '8 GB', name: '8 GB'}]}
+                    options={[ { value: '1 GB', name: '1 GB' }, { value: '2 GB', name: '2 GB' }, { value: '4 GB', name: '4 GB' }, { value: '6 GB', name: '6 GB'}, { value: '8 GB', name: '8 GB'}]}
                     label="RAM"
                     value={ram}
                     placeholder={`RAM of product`}
@@ -378,6 +452,44 @@ const Products = () => {
         )
     }
 
+    const renderAddClothingDetailsModal = () => {
+        return (
+            <Modal
+                show={show}
+                handleClose={() => setShow(false)}
+                handleSave={handleAddClothing}
+                modalTitle={'Add New Variant Product'}
+            >
+                <Input
+                    label="Quantity"
+                    value={quantity}
+                    placeholder={`Quantity`}
+                    onChange={(e) => setQuantity(e.target.value)}
+                />
+                <Input
+                    type="select"
+                    options={[ { value: 'S', name: 'S' }, { value: 'M', name: 'M' }, { value: 'L', name: 'L'}, { value: 'XL', name: 'XL'}, { value: 'XXL', name: 'XXL'} ]}
+                    label="Size"
+                    value={size}
+                    placeholder={`Size of product`}
+                    onChange={(e) => setSize(e.target.value)}
+                />
+                <Input
+                    label="Color"
+                    value={color}
+                    placeholder={`Color of product`}
+                    onChange={(e) => setColor(e.target.value)}
+                />
+                <Input
+                    label="Fabric"
+                    value={fabric}
+                    placeholder={`Fabric of product`}
+                    onChange={(e) => setFabric(e.target.value)}
+                />
+            </Modal>
+        )
+    }
+
     const handleCloseProductDetailsModal = () => {
         setProductDetailModal(false);
     }
@@ -392,9 +504,29 @@ const Products = () => {
         setUpdateProductModal(true);
     }
 
+    const showUpdateSmartPhoneProductModal = (product) => {
+        setSmartPhoneDetails(product);
+        setUpdateSmartPhoneProductModal(true);
+    }
+
+    const showUpdateClothingProductModal = (product) => {
+        setClothingDetails(product);
+        setUpdateClothingProductModal(true);
+    }
+
     const handleProductInput = (key, value) => {
         const updatedProduct = { ...productDetails, [key] : value }
         setProductDetails(updatedProduct);
+    }
+
+    const handleSmartPhoneProductInput = (key, value) => {
+        const updatedProduct = { ...smartPhoneDetails, [key] : value }
+        setSmartPhoneDetails(updatedProduct);
+    }
+
+    const handleClothingProductInput = (key, value) => {
+        const updatedProduct = { ...clothingDetails, [key] : value }
+        setClothingDetails(updatedProduct);
     }
 
     const renderProductDetailsModal = () => {
@@ -453,7 +585,17 @@ const Products = () => {
     }
 
     const onDelete = () => {
-        dispatch(deleteProductById(deleteProduct));
+        const { type } = deleteProduct;
+        switch(type){
+            case 'smartPhone':
+                dispatch(deleteSmartPhoneProductById(deleteProduct));
+            break;
+            case 'clothing':
+                dispatch(deleteClothingProductById(deleteProduct));
+            break;
+            default:
+                dispatch(deleteProductById(deleteProduct));
+        }
         setAlertDelete(false);
     }
 
@@ -509,7 +651,12 @@ const Products = () => {
                             <button onClick={handleShow}>Add</button>
                         </div>
                         {
-                            smartPhone ? <button onClick={() => setSmartPhone(false)}>Go back</button> : null
+                            smartPhone || clothing ? 
+                            <button onClick={() => {
+                                setSmartPhone(false);
+                                setClothing(false);
+                            }}>Go back</button> : 
+                            null
                         }
                         <div className="searchInputContainer">
                             <input type="text" className="searchInput" onChange={(e) => productFilterBySearch(e)} value={search} placeholder="Search for names.."></input>
@@ -523,11 +670,13 @@ const Products = () => {
                 </Row>
                 <Row>
                     <Col style={{ height: 600 }}>
-                        { smartPhone ? renderVariantProducts() : renderProducts()}
+                        { smartPhone || clothing ? renderVariantProducts() : renderProducts()}
                     </Col>
                 </Row>
             </Container>
-            { smartPhone ? renderAddSmartPhoneDetailsModal() : renderAddProductModal()}
+            { smartPhone ? renderAddSmartPhoneDetailsModal() : 
+                clothing ? renderAddClothingDetailsModal() :
+                renderAddProductModal() }
             {renderProductDetailsModal()}
             {renderAlertDeleteModal()}
             <UpdateProductsModal
@@ -546,6 +695,24 @@ const Products = () => {
                 deleteAddProductPictures={deleteAddProductPictures}
                 createCategoryList={createCategoryList}
                 product={productDetails}
+            />
+            <UpdateSmartPhoneProductsModal
+                show={updateSmartPhoneProductModal}
+                handleClose={() => setUpdateSmartPhoneProductModal(false)} 
+                handleSave={handleUpdateSmartPhone}
+                product={smartPhoneDetails}
+                handleProductInput={handleSmartPhoneProductInput}
+                modalTitle={'Update Smartphone Variants'}
+                size="lg"
+            />
+            <UpdateClothingProductsModal
+                show={updateClothingProductModal}
+                handleClose={() => setUpdateClothingProductModal(false)}
+                handleSave={handleUpdateClothing}
+                product={clothingDetails}
+                handleProductInput={handleClothingProductInput}
+                modalTitle={'Update Clothing Variants'}
+                size="lg"
             />
         </Layout>
     )
