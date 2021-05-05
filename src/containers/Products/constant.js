@@ -5,10 +5,13 @@ export const clothingCat = ['Footwear', 'Top wear', 'Bottom wear']
 export const televisionCat = ['Television']
 
 export const laptopCat = ['Laptop', 'Gaming Laptops']
+
+export const furnitureCat = ['Furniture', 'Beds', 'Sofa', 'Dining Tables & Chairs']
   
 export default {
     smartPhoneCat,
     clothingCat,
     televisionCat,
-    laptopCat
+    laptopCat,
+    furnitureCat
 }

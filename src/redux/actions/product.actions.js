@@ -358,3 +358,72 @@ export const deleteLaptopProductById = (payload) => {
         }
     };
 };
+
+export const getFurnitureProductDetailsById = (product) => {
+    return async dispatch => {
+        let res;
+        dispatch({ type: productConstants.GET_FURNITURE_PRODUCT_DETAILS_BY_ID_REQUEST });
+        try {
+            const { _id } = product;
+            res = await axios.get(`/product/furniture/${_id}`);
+            dispatch({
+                type: productConstants.GET_FURNITURE_PRODUCT_DETAILS_BY_ID_SUCCESS,
+                payload: { productDetails: res.data.product }
+            });
+            console.log(_id, res);
+        }catch(error){
+            console.log(error);
+            dispatch({
+                type: productConstants.GET_FURNITURE_PRODUCT_DETAILS_BY_ID_FAILURE,
+                payload: { error: res.data.error }
+            })
+        }
+    }
+}
+
+export const addFurnitureProductDetails = (payload) => {
+    const { product } = payload;
+    return async (dispatch) => {
+        try{
+            dispatch({ type: productConstants.ADD_FURNITURE_PRODUCT_REQUEST });
+            const res = await axios.post(`product/editFurnitureProductDetail`, { ...payload });
+
+            if(res.status === 201){
+                dispatch({ type: productConstants.ADD_FURNITURE_PRODUCT_SUCCESS });
+                dispatch(getFurnitureProductDetailsById({ _id: product }));
+                dispatch(getProducts());
+            }else{
+                dispatch({ type: productConstants.ADD_FURNITURE_PRODUCT_FAILURE });
+            }
+        }catch(error){
+            console.log(error);
+        }
+    };
+}
+
+export const deleteFurnitureProductById = (payload) => {
+    const { product } = payload;
+    return async (dispatch) => {
+        try{
+            const res = await axios.delete(`product/deleteFurnitureProductById`, {
+                data: {payload}
+            });
+            dispatch({ type: productConstants.DELETE_FURNITURE_PRODUCT_BY_ID_REQUEST })
+            if(res.status === 202){
+                dispatch({ type: productConstants.DELETE_FURNITURE_PRODUCT_BY_ID_SUCCESS });
+                dispatch(getFurnitureProductDetailsById({ _id: product }));
+                dispatch(getProducts());
+            }else{
+                const { error } = res.data;
+                dispatch({
+                    type: productConstants.DELETE_FURNITURE_PRODUCT_BY_ID_FAILURE,
+                    payload: {
+                        error,
+                    },
+                });
+            }
+        }catch(error){
+            console.log(error);
+        }
+    };
+};

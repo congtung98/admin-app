@@ -19,10 +19,12 @@ const ListProductDetails = (props) => {
     let clothing = [];
     let televisions = [];
     let laptops = [];
+    let furnitures = [];
     smartPhones = product.smartPhones;
     clothing = product.clothing;
     televisions = product.televisions;
     laptops = product.laptops;
+    furnitures = product.furnitures;
     switch(props.type){
         case 'smartPhone':
             return  (
@@ -209,6 +211,50 @@ const ListProductDetails = (props) => {
                                     <td>{product.graphicProcessor}</td>
                                     <td>{product.weight}</td>
                                     <td>{product.screenSize}</td>                      
+                                    <td style={{ justifyContent: "center", alignItems: "center" }}>
+                                        <button onClick={() => showUpdateProductModal(product)}>
+                                            <IoIosCreate color="green" size={20} />
+                                        </button>
+                                        <button
+                                            onClick={() => {
+                                                const payload = {
+                                                    productId: product._id,
+                                                    product: productId,
+                                                    type: props.type,
+                                                    quantity: product.quantity
+                                                };
+                                                showAlertDeleteModal(payload); 
+                                            }}
+                                        >
+                                            <IoIosTrash color="red" size={20}/>
+                                        </button>
+                                    </td>
+                                </tr>
+                            ) : null
+                        }
+                    </tbody>
+                </Table>
+            )
+        case 'furniture':
+            return (
+                <Table style={{ fontSize: 12 }} responsive="sm">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Quantity</th>
+                        <th>Primary Color</th>
+                        <th>Material</th>                  
+                    </tr>
+                    </thead>
+                    <tbody>
+                        {
+                            furnitures.length > 0 ?
+                            furnitures.map(product =>
+                                <tr key={product._id}>
+                                    <td>{furnitures.indexOf(product) + 1}</td>
+                                    <td>{product.quantity}</td>
+                                    <td>{product.primaryColor}</td>
+                                    <td>{product.material}</td>                     
                                     <td style={{ justifyContent: "center", alignItems: "center" }}>
                                         <button onClick={() => showUpdateProductModal(product)}>
                                             <IoIosCreate color="green" size={20} />

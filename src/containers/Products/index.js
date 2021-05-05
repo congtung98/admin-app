@@ -3,7 +3,7 @@ import Layout from '../../components/Layout';
 import { Container, Row, Col, Table } from 'react-bootstrap';
 import Input from '../../components/UI/Input';
 import { useDispatch, useSelector } from 'react-redux';
-import { addClothingProductDetails, addLaptopProductDetails, addProduct, addSmartPhoneProductDetails, addTelevisionProductDetails, deleteClothingProductById, deleteLaptopProductById, deleteProductById, deleteSmartPhoneProductById, deleteTelevisionProductById, getClothingProductDetailsById, getLaptopProductDetailsById, getSmartPhoneProductDetailsById, getTelevisionProductDetailsById, updateProduct } from '../../redux/actions';
+import { addClothingProductDetails, addFurnitureProductDetails, addLaptopProductDetails, addProduct, addSmartPhoneProductDetails, addTelevisionProductDetails, deleteClothingProductById, deleteFurnitureProductById, deleteLaptopProductById, deleteProductById, deleteSmartPhoneProductById, deleteTelevisionProductById, getClothingProductDetailsById, getFurnitureProductDetailsById, getLaptopProductDetailsById, getSmartPhoneProductDetailsById, getTelevisionProductDetailsById, updateProduct } from '../../redux/actions';
 import Modal from '../../components/UI/Modal';
 import './style.css';
 import { generatePublicUrl } from '../../urlConfig';
@@ -12,11 +12,12 @@ import UpdateProductsModal from './components/UpdateProductsModal';
 import UpdateSmartPhoneProductsModal from './components/UpdateSmartPhoneProductsModal';
 import { useEffect } from 'react';
 import ListProductDetails from './components/ListProductDetails';
-import { clothingCat, laptopCat, smartPhoneCat, televisionCat } from './constant';
+import { clothingCat, furnitureCat, laptopCat, smartPhoneCat, televisionCat } from './constant';
 import Pagination from './components/Pagination';
 import UpdateClothingProductsModal from './components/UpdateClothingProductsModal';
 import UpdateTelevisionProductsModal from './components/UpdateTelevisionProductsModal';
 import UpdateLaptopProductsModal from './components/UpdateLaptopProductsModal';
+import UpdateFurnitureProductsModal from './components/UpdateFurnitureProductsModal';
 
 const Products = () => {
 
@@ -76,6 +77,13 @@ const Products = () => {
     const [weight, setWeight] = useState('');
     const [updateLaptopProductModal, setUpdateLaptopProductModal] = useState(false);
     const [laptopDetails, setLaptopDetails] = useState(null);
+
+    //state furniture
+    const [furniture, setFurniture] = useState(false);
+    const [primaryColor, setPrimaryColor] = useState('');
+    const [material, setMaterial] = useState('');
+    const [updateFurnitureProductModal, setUpdateFurnitureProductModal] = useState(false);
+    const [furnitureDetails, setFurnitureDetails] = useState(null);
     
     const [productId, setProductID] = useState('');
     const category = useSelector(state => state.category);
@@ -110,17 +118,23 @@ const Products = () => {
             if(productDetails.quantity && product.laptops.length === 0){
                 setQuantity(productDetails.quantity);
             }
+        }else if(furniture){
+            if(productDetails.quantity && product.furnitures.length === 0){
+                setQuantity(productDetails.quantity);
+            }
         }
-    }, [product.smartPhones, product.clothing, product.televisions, product.laptops])
+    }, [product.smartPhones, product.clothing, product.televisions, product.laptops, product.furnitures])
 
     let smartPhones = [];
     let clothes = [];
     let televisions = [];
     let laptops = [];
+    let furnitures = [];
     smartPhones = product.smartPhones;
     clothes = product.clothing;
     televisions = product.televisions;
     laptops = product.laptops;
+    furnitures = product.furnitures;
     // Get current posts
     const indexOfLastProd = currentPage * productsPerPage;
     const indexOfFirstProd = indexOfLastProd - productsPerPage;
@@ -217,7 +231,6 @@ const Products = () => {
     }
 
     const handleAddLaptop = () => {
-        console.log(quantity, 'helo');
         const payload = {
             quantity,
             ram,
@@ -241,6 +254,21 @@ const Products = () => {
         setProcessor('');
         setGraphicProcessor('')
         setScreenSize('');
+    }
+
+    const handleAddFurniture = () => {
+        const payload = {
+            quantity,
+            primaryColor,
+            material,
+            product: productId,
+        }
+        dispatch(addFurnitureProductDetails(payload));
+
+        setShow(false);
+        setQuantity('');
+        setPrimaryColor('');
+        setMaterial('');
     }
 
     const handleUpdate = () => {
@@ -293,6 +321,12 @@ const Products = () => {
         setUpdateLaptopProductModal(false);
     }
 
+    const handleUpdateFurniture = () => {
+        const payload = furnitureDetails;
+        dispatch(addFurnitureProductDetails(payload));
+        setUpdateFurnitureProductModal(false);
+    }
+
     const handleShow = () => setShow(true);
 
     const createCategoryList = (categories, options = []) => {
@@ -337,6 +371,7 @@ const Products = () => {
         const clothingCategory = clothingCat;
         const televisionCategory = televisionCat;
         const laptopCategory = laptopCat;
+        const furnitureCategory = furnitureCat;
         console.log(p.category.name, smartPhoneCategory, clothingCat, laptopCategory);
         if(smartPhoneCategory.includes(p.category.name)){
             dispatch(getSmartPhoneProductDetailsById(p));
@@ -350,6 +385,9 @@ const Products = () => {
         }else if(laptopCategory.includes(p.category.name)){
             dispatch(getLaptopProductDetailsById(p));
             setLaptop(true);
+        }else if(furnitureCategory.includes(p.category.name)){
+            dispatch(getFurnitureProductDetailsById(p));
+            setFurniture(true);
         }
     }
 
@@ -379,6 +417,13 @@ const Products = () => {
             return <ListProductDetails
                         type="laptop"
                         showUpdateProductModal={showUpdateLaptopProductModal}
+                        productId={productId}
+                        showAlertDeleteModal={showAlertDeleteModal}
+                    />
+        }else if(furniture){
+            return <ListProductDetails
+                        type="furniture"
+                        showUpdateProductModal={showUpdateFurnitureProductModal}
                         productId={productId}
                         showAlertDeleteModal={showAlertDeleteModal}
                     />
@@ -771,6 +816,46 @@ const Products = () => {
         )
     }
 
+    const renderAddFurnitureDetailsModal = () => {
+        return (
+            <Modal
+                show={show}
+                handleClose={handleClose}
+                handleSave={handleAddFurniture}
+                modalTitle={'Add New Variant Product'}
+            >
+                {
+                    productDetails.quantity && product.furnitures.length === 0 ?
+                    <Input
+                        disabled={true}
+                        label="Quantity"
+                        value={productDetails.quantity}
+                        placeholder={`Quantity`}
+                        onChange={(e) => setQuantity(e.target.value)}
+                    /> :   
+                    <Input
+                        label="Quantity"
+                        value={quantity}
+                        placeholder={`Quantity`}
+                        onChange={(e) => setQuantity(e.target.value)}
+                    />
+                }   
+                <Input
+                    label="Primary Color"
+                    value={product.primaryColor}
+                    placeholder={`Primary color of product`}
+                    onChange={(e) => setPrimaryColor(e.target.value)}
+                />            
+                <Input
+                    label="Material"
+                    value={product.material}
+                    placeholder={`Material of product`}
+                    onChange={(e) => setMaterial(e.target.value)}
+                />           
+            </Modal>
+        )
+    }
+
     const handleCloseProductDetailsModal = () => {
         setProductDetailModal(false);
     }
@@ -805,6 +890,11 @@ const Products = () => {
         setUpdateLaptopProductModal(true);
     }
 
+    const showUpdateFurnitureProductModal = (product) => {
+        setFurnitureDetails(product);
+        setUpdateFurnitureProductModal(true);
+    }
+
     const handleProductInput = (key, value) => {
         const updatedProduct = { ...productDetails, [key] : value }
         setProductDetails(updatedProduct);
@@ -828,6 +918,11 @@ const Products = () => {
     const handleLaptopProductInput = (key, value) => {
         const updatedProduct = { ...laptopDetails, [key] : value }
         setLaptopDetails(updatedProduct);
+    }
+
+    const handleFurnitureProductInput = (key, value) => {
+        const updatedProduct = { ...furnitureDetails, [key] : value }
+        setFurnitureDetails(updatedProduct);
     }
 
     const renderProductDetailsModal = () => {
@@ -900,8 +995,11 @@ const Products = () => {
             case 'laptop':
                 dispatch(deleteLaptopProductById(deleteProduct));
                 break;
+            case 'furniture':
+                dispatch(deleteFurnitureProductById(deleteProduct));
+                break;
             default:
-                if(smartPhones.length > 0 || clothes.length > 0 || televisions.length > 0 || laptops.length > 0){
+                if(smartPhones.length > 0 || clothes.length > 0 || televisions.length > 0 || laptops.length > 0 || furnitures.length > 0){
                     setErrorDelete(true);
                 }else{
                     dispatch(deleteProductById(deleteProduct));
@@ -994,12 +1092,13 @@ const Products = () => {
                             <button onClick={handleShow}>Add</button>
                         </div>
                         {
-                            smartPhone || clothing || television || laptop ? 
+                            smartPhone || clothing || television || laptop || furniture ? 
                             <button onClick={() => {
                                 setSmartPhone(false);
                                 setClothing(false);
                                 setTelevision(false);
                                 setLaptop(false);
+                                setFurniture(false);
                             }}>Go back</button> : 
                             null
                         }
@@ -1015,7 +1114,7 @@ const Products = () => {
                 </Row>
                 <Row>
                     <Col style={{ height: 600 }}>
-                        { smartPhone || clothing || television || laptop ? renderVariantProducts() : renderProducts()}
+                        { smartPhone || clothing || television || laptop || furniture ? renderVariantProducts() : renderProducts()}
                     </Col>
                 </Row>
             </Container>
@@ -1023,6 +1122,7 @@ const Products = () => {
                 clothing ? renderAddClothingDetailsModal() :
                 television ? renderAddTelevisionDetailsModal() :
                 laptop ? renderAddLaptopDetailsModal() :
+                furniture ? renderAddFurnitureDetailsModal() :
                 renderAddProductModal() }
             {renderProductDetailsModal()}
             {renderAlertDeleteModal()}
@@ -1078,6 +1178,15 @@ const Products = () => {
                 product={laptopDetails}
                 handleProductInput={handleLaptopProductInput}
                 modalTitle={'Update Laptop Variants'}
+                size="lg"
+            />
+            <UpdateFurnitureProductsModal
+                show={updateFurnitureProductModal}
+                handleClose={() => setUpdateFurnitureProductModal(false)}
+                handleSave={handleUpdateFurniture}
+                product={furnitureDetails}
+                handleProductInput={handleFurnitureProductInput}
+                modalTitle={'Update Furniture Variants'}
                 size="lg"
             />
         </Layout>
