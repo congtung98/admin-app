@@ -4,6 +4,8 @@ const initialState = {
     products: [],
     smartPhones: [],
     clothing: [],
+    televisions: [],
+    laptops: [],
     loading: false,
     error: null
 };
@@ -32,6 +34,36 @@ export default (state = initialState, action) => {
             state = {
                 ...state,
                 clothing: action.payload.productDetails
+            }
+            break;
+        case productConstants.ADD_CLOTHING_PRODUCT_SUCCESS:
+            state = {
+                ...state,
+                loading: false
+            }
+            break;
+        case productConstants.GET_TELEVISION_PRODUCT_DETAILS_BY_ID_SUCCESS:
+            state = {
+                ...state,
+                televisions: action.payload.productDetails
+            }
+            break;
+        case productConstants.ADD_TELEVISION_PRODUCT_SUCCESS:
+            state = {
+                ...state,
+                loading: false
+            }
+            break;
+        case productConstants.GET_LAPTOP_PRODUCT_DETAILS_BY_ID_SUCCESS:
+            state = {
+                ...state,
+                laptops: action.payload.productDetails
+            }
+            break;
+        case productConstants.ADD_LAPTOP_PRODUCT_SUCCESS:
+            state = {
+                ...state,
+                loading: false
             }
             break;
         }

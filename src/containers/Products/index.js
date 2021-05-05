@@ -3,7 +3,7 @@ import Layout from '../../components/Layout';
 import { Container, Row, Col, Table } from 'react-bootstrap';
 import Input from '../../components/UI/Input';
 import { useDispatch, useSelector } from 'react-redux';
-import { addClothingProductDetails, addProduct, addSmartPhoneProductDetails, deleteClothingProductById, deleteProductById, deleteSmartPhoneProductById, getClothingProductDetailsById, getSmartPhoneProductDetailsById, updateProduct } from '../../redux/actions';
+import { addClothingProductDetails, addLaptopProductDetails, addProduct, addSmartPhoneProductDetails, addTelevisionProductDetails, deleteClothingProductById, deleteLaptopProductById, deleteProductById, deleteSmartPhoneProductById, deleteTelevisionProductById, getClothingProductDetailsById, getLaptopProductDetailsById, getSmartPhoneProductDetailsById, getTelevisionProductDetailsById, updateProduct } from '../../redux/actions';
 import Modal from '../../components/UI/Modal';
 import './style.css';
 import { generatePublicUrl } from '../../urlConfig';
@@ -12,9 +12,11 @@ import UpdateProductsModal from './components/UpdateProductsModal';
 import UpdateSmartPhoneProductsModal from './components/UpdateSmartPhoneProductsModal';
 import { useEffect } from 'react';
 import ListProductDetails from './components/ListProductDetails';
-import { clothingCat, smartPhoneCat } from './constant';
+import { clothingCat, laptopCat, smartPhoneCat, televisionCat } from './constant';
 import Pagination from './components/Pagination';
 import UpdateClothingProductsModal from './components/UpdateClothingProductsModal';
+import UpdateTelevisionProductsModal from './components/UpdateTelevisionProductsModal';
+import UpdateLaptopProductsModal from './components/UpdateLaptopProductsModal';
 
 const Products = () => {
 
@@ -35,6 +37,7 @@ const Products = () => {
     const [searchProduct, setSearchProduct] = useState([]);
     const [alertDelete, setAlertDelete] = useState(false);
     const [deleteProduct, setDeleteProduct] = useState('');
+    const [errorDelete, setErrorDelete] = useState(false);
     
     //state smartphone
     const [smartPhone, setSmartPhone] = useState(false);
@@ -55,6 +58,24 @@ const Products = () => {
     const [fabric, setFabric] = useState('');
     const [updateClothingProductModal, setUpdateClothingProductModal] = useState(false);
     const [clothingDetails, setClothingDetails] = useState(null);
+
+    //state television
+    const [television, setTelevision] = useState(false);
+    const [resolution, setResolution] = useState('');
+    const [screenType, setScreenType] = useState('');
+    const [operatingSystem, setOperatingSystem] = useState('');
+    const [updateTelevisionProductModal, setUpdateTelevisionProductModal] = useState(false);
+    const [televisionDetails, setTelevisionDetails] = useState(null);
+
+    //state laptop
+    const [laptop, setLaptop] = useState(false);
+    const [screenResolution, setScreenResolution] = useState('');
+    const [hardDiskCapacity, setHardDiskCapacity] = useState('');
+    const [processor, setProcessor] = useState('');
+    const [graphicProcessor, setGraphicProcessor] = useState('');
+    const [weight, setWeight] = useState('');
+    const [updateLaptopProductModal, setUpdateLaptopProductModal] = useState(false);
+    const [laptopDetails, setLaptopDetails] = useState(null);
     
     const [productId, setProductID] = useState('');
     const category = useSelector(state => state.category);
@@ -72,13 +93,46 @@ const Products = () => {
         console.log(searchProduct, 'ok');
     }, [searchProduct]);
 
-    // Get current posts
-  const indexOfLastProd = currentPage * productsPerPage;
-  const indexOfFirstProd = indexOfLastProd - productsPerPage;
-  const currentProd = product.products.slice(indexOfFirstProd, indexOfLastProd);
+    useEffect(() => {
+        if(smartPhone){
+            if(productDetails.quantity && product.smartPhones.length === 0){
+                setQuantity(productDetails.quantity);
+            }
+        }else if(clothing){
+            if(productDetails.quantity && product.clothing.length === 0){
+                setQuantity(productDetails.quantity);
+            }
+        }else if(television){
+            if(productDetails.quantity && product.televisions.length === 0){
+                setQuantity(productDetails.quantity);
+            }
+        }else if(laptop){
+            if(productDetails.quantity && product.laptops.length === 0){
+                setQuantity(productDetails.quantity);
+            }
+        }
+    }, [product.smartPhones, product.clothing, product.televisions, product.laptops])
 
-  // Change page
-  const paginate = pageNumber => setCurrentPage(pageNumber);
+    let smartPhones = [];
+    let clothes = [];
+    let televisions = [];
+    let laptops = [];
+    smartPhones = product.smartPhones;
+    clothes = product.clothing;
+    televisions = product.televisions;
+    laptops = product.laptops;
+    // Get current posts
+    const indexOfLastProd = currentPage * productsPerPage;
+    const indexOfFirstProd = indexOfLastProd - productsPerPage;
+    const currentProd = product.products.slice(indexOfFirstProd, indexOfLastProd);
+
+    // Change page
+    const paginate = pageNumber => setCurrentPage(pageNumber);
+
+    const handleClose = () => {
+        setShow(false);
+        setQuantity('');
+    };
 
     const handleSave = () => {
 
@@ -96,6 +150,7 @@ const Products = () => {
         dispatch(addProduct(form));
         
         setShow(false);
+        setQuantity('');
     };
 
     const handleAddSmartPhone = () => {
@@ -142,6 +197,52 @@ const Products = () => {
         setFabric('');
     }
 
+    const handleAddTelevision = () => {
+        const payload = {
+            quantity,
+            resolution,
+            screenType,
+            operatingSystem,
+            screenSize,
+            product: productId,
+        }
+        dispatch(addTelevisionProductDetails(payload));
+
+        setShow(false);
+        setQuantity('');
+        setResolution('');
+        setScreenType('');
+        setOperatingSystem('');
+        setScreenSize('');
+    }
+
+    const handleAddLaptop = () => {
+        console.log(quantity, 'helo');
+        const payload = {
+            quantity,
+            ram,
+            hardDiskCapacity,
+            screenResolution,
+            operatingSystem,
+            processor,
+            graphicProcessor,
+            weight,
+            screenSize,
+            product: productId,
+        }
+        dispatch(addLaptopProductDetails(payload));
+
+        setShow(false);
+        setQuantity('');
+        setRam('');
+        setHardDiskCapacity('');
+        setScreenResolution('');
+        setOperatingSystem('');
+        setProcessor('');
+        setGraphicProcessor('')
+        setScreenSize('');
+    }
+
     const handleUpdate = () => {
         let arr = productDetails.productPictures.map(function (obj) {
             return obj.img;
@@ -178,6 +279,18 @@ const Products = () => {
         const payload = clothingDetails;
         dispatch(addClothingProductDetails(payload));
         setUpdateClothingProductModal(false);
+    }
+
+    const handleUpdateTelevision = () => {
+        const payload = televisionDetails;
+        dispatch(addTelevisionProductDetails(payload));
+        setUpdateTelevisionProductModal(false);
+    }
+
+    const handleUpdateLaptop = () => {
+        const payload = laptopDetails;
+        dispatch(addLaptopProductDetails(payload));
+        setUpdateLaptopProductModal(false);
     }
 
     const handleShow = () => setShow(true);
@@ -222,13 +335,21 @@ const Products = () => {
     const renderProductDetails = (p) => {
         const smartPhoneCategory = smartPhoneCat;
         const clothingCategory = clothingCat;
-        console.log(p, smartPhoneCategory, clothingCat);
+        const televisionCategory = televisionCat;
+        const laptopCategory = laptopCat;
+        console.log(p.category.name, smartPhoneCategory, clothingCat, laptopCategory);
         if(smartPhoneCategory.includes(p.category.name)){
             dispatch(getSmartPhoneProductDetailsById(p));
             setSmartPhone(true);
         }else if(clothingCategory.includes(p.category.name)){
             dispatch(getClothingProductDetailsById(p));
             setClothing(true);
+        }else if(televisionCategory.includes(p.category.name)){
+            dispatch(getTelevisionProductDetailsById(p));
+            setTelevision(true);
+        }else if(laptopCategory.includes(p.category.name)){
+            dispatch(getLaptopProductDetailsById(p));
+            setLaptop(true);
         }
     }
 
@@ -244,6 +365,20 @@ const Products = () => {
             return <ListProductDetails
                         type="clothing"
                         showUpdateProductModal={showUpdateClothingProductModal}
+                        productId={productId}
+                        showAlertDeleteModal={showAlertDeleteModal}
+                    />
+        }else if(television){
+            return <ListProductDetails
+                        type="television"
+                        showUpdateProductModal={showUpdateTelevisionProductModal}
+                        productId={productId}
+                        showAlertDeleteModal={showAlertDeleteModal}
+                    />
+        }else if(laptop){
+            return <ListProductDetails
+                        type="laptop"
+                        showUpdateProductModal={showUpdateLaptopProductModal}
                         productId={productId}
                         showAlertDeleteModal={showAlertDeleteModal}
                     />
@@ -276,7 +411,7 @@ const Products = () => {
                                 <tr key={product._id}>
                                     <td>{products.indexOf(product) + 1}</td>
                                     <td
-                                        style={{ cursor: 'pointer' }}
+                                        style={{ cursor: 'pointer', textOverflow: 'ellipsis', width: 450 }}
                                         onClick={() => {
                                             setProductID(product._id)
                                             setProductDetails(product);
@@ -297,7 +432,7 @@ const Products = () => {
                                                 const payload = {
                                                     productId: product._id,
                                                 };
-                                                showAlertDeleteModal(payload);      
+                                                showAlertDeleteModal(payload, product);      
                                             }}
                                         >
                                             <IoIosTrash color="red" size={20}/>
@@ -376,7 +511,7 @@ const Products = () => {
         return (
             <Modal
                 show={show}
-                handleClose={() => setShow(false)}
+                handleClose={handleClose}
                 handleSave={handleAddSmartPhone}
                 modalTitle={'Add New Variant Product'}
             >
@@ -456,16 +591,26 @@ const Products = () => {
         return (
             <Modal
                 show={show}
-                handleClose={() => setShow(false)}
+                handleClose={handleClose}
                 handleSave={handleAddClothing}
                 modalTitle={'Add New Variant Product'}
             >
-                <Input
-                    label="Quantity"
-                    value={quantity}
-                    placeholder={`Quantity`}
-                    onChange={(e) => setQuantity(e.target.value)}
-                />
+                {
+                    productDetails.quantity && product.clothing.length === 0 ?
+                    <Input
+                        disabled={true}
+                        label="Quantity"
+                        value={productDetails.quantity}
+                        placeholder={`Quantity`}
+                        onChange={(e) => setQuantity(e.target.value)}
+                    /> :   
+                    <Input
+                        label="Quantity"
+                        value={quantity}
+                        placeholder={`Quantity`}
+                        onChange={(e) => setQuantity(e.target.value)}
+                    />
+                }
                 <Input
                     type="select"
                     options={[ { value: 'S', name: 'S' }, { value: 'M', name: 'M' }, { value: 'L', name: 'L'}, { value: 'XL', name: 'XL'}, { value: 'XXL', name: 'XXL'} ]}
@@ -485,6 +630,142 @@ const Products = () => {
                     value={fabric}
                     placeholder={`Fabric of product`}
                     onChange={(e) => setFabric(e.target.value)}
+                />
+            </Modal>
+        )
+    }
+
+    const renderAddTelevisionDetailsModal = () => {
+        return (
+            <Modal
+                show={show}
+                handleClose={handleClose}
+                handleSave={handleAddTelevision}
+                modalTitle={'Add New Variant Product'}
+            >
+                {
+                    productDetails.quantity && product.televisions.length === 0 ?
+                    <Input
+                        disabled={true}
+                        label="Quantity"
+                        value={productDetails.quantity}
+                        placeholder={`Quantity`}
+                        onChange={(e) => setQuantity(e.target.value)}
+                    /> :   
+                    <Input
+                        label="Quantity"
+                        value={quantity}
+                        placeholder={`Quantity`}
+                        onChange={(e) => setQuantity(e.target.value)}
+                    />
+                }
+                <Input
+                    label="Resolution"
+                    value={resolution}
+                    placeholder={`Resolution of product`}
+                    onChange={(e) => setResolution(e.target.value)}
+                />
+                <Input
+                    type="select"
+                    options={[ { value: 'LED', name: 'LED' }, { value: 'LCD', name: 'LCD' }, { value: 'OLED', name: 'OLED'}, { value: 'QLED', name: 'QLED'} ]}
+                    label="Screen Type"
+                    value={screenType}
+                    placeholder={`Screen type of product`}
+                    onChange={(e) => setScreenType(e.target.value)}
+                />            
+                <Input
+                    type="select"
+                    options={[ { value: 'Android', name: 'Android' }, { value: 'Linux', name: 'Linux' }, { value: 'Tizen', name: 'Tizen'}, { value: 'WebOS', name: 'WebOS'} ]}
+                    label="Operating System"
+                    value={operatingSystem}
+                    placeholder={`Screen type of product`}
+                    onChange={(e) => setOperatingSystem(e.target.value)}
+                />
+                <Input
+                    label="Screen size"
+                    value={screenSize}
+                    placeholder={`Screen size of product`}
+                    onChange={(e) => setScreenSize(e.target.value)}
+                />
+            </Modal>
+        )
+    }
+
+    const renderAddLaptopDetailsModal = () => {
+        return (
+            <Modal
+                show={show}
+                handleClose={handleClose}
+                handleSave={handleAddLaptop}
+                modalTitle={'Add New Variant Product'}
+            >
+                {
+                    productDetails.quantity && product.laptops.length === 0 ?
+                    <Input
+                        disabled={true}
+                        label="Quantity"
+                        value={productDetails.quantity}
+                        placeholder={`Quantity`}
+                        onChange={(e) => setQuantity(e.target.value)}
+                    /> :   
+                    <Input
+                        label="Quantity"
+                        value={quantity}
+                        placeholder={`Quantity`}
+                        onChange={(e) => setQuantity(e.target.value)}
+                    />
+                }
+                <Input
+                    type="select"
+                    options={[ { value: '2 GB', name: '2 GB' }, { value: '4 GB', name: '4 GB' }, { value: '8 GB', name: '8 GB'}, { value: '16 GB', name: '16 GB'} ]}
+                    label="RAM"
+                    value={product.ram}
+                    placeholder={`RAM of product`}
+                    onChange={(e) => setRam(e.target.value)}
+                />      
+                <Input
+                    label="Hard Disk Capacity"
+                    value={product.hardDiskCapacity}
+                    placeholder={`Hard disk capacity of product`}
+                    onChange={(e) => setHardDiskCapacity(e.target.value)}
+                />            
+                <Input
+                    label="Screen Resolution"
+                    value={product.screenResolution}
+                    placeholder={`Screen resolution of product`}
+                    onChange={(e) => setScreenResolution(e.target.value)}
+                />
+                <Input
+                    type="select"
+                    options={[ { value: 'Windows', name: 'Windows' }, { value: 'Ubuntu', name: 'Ubunto' }, { value: 'MacOS', name: 'MacOS'} ]}
+                    label="Operating System"
+                    value={product.operatingSystem}
+                    placeholder={`Operating system of product`}
+                    onChange={(e) => setOperatingSystem(e.target.value)}
+                />
+                <Input
+                    label="Processor"
+                    value={product.processor}
+                    placeholder={`Processor of product`}
+                    onChange={(e) => setProcessor(e.target.value)}
+                />
+                <Input
+                    label="Graphic processor"
+                    value={product.graphicProcessor}
+                    placeholder={`Graphic processor of product`}
+                    onChange={(e) => setGraphicProcessor(e.target.value)}
+                />
+                <Input
+                    label="Weight"
+                    value={product.weight}
+                    placeholder={`Weight of product`}
+                    onChange={(e) => setWeight(e.target.value)}
+                />
+                <Input
+                    label="Screen size"
+                    value={product.screenSize}
+                    placeholder={`Screen size of product`}
+                    onChange={(e) => setScreenSize(e.target.value)}
                 />
             </Modal>
         )
@@ -514,6 +795,16 @@ const Products = () => {
         setUpdateClothingProductModal(true);
     }
 
+    const showUpdateTelevisionProductModal = (product) => {
+        setTelevisionDetails(product);
+        setUpdateTelevisionProductModal(true);
+    }
+
+    const showUpdateLaptopProductModal = (product) => {
+        setLaptopDetails(product);
+        setUpdateLaptopProductModal(true);
+    }
+
     const handleProductInput = (key, value) => {
         const updatedProduct = { ...productDetails, [key] : value }
         setProductDetails(updatedProduct);
@@ -527,6 +818,16 @@ const Products = () => {
     const handleClothingProductInput = (key, value) => {
         const updatedProduct = { ...clothingDetails, [key] : value }
         setClothingDetails(updatedProduct);
+    }
+
+    const handleTelevisionProductInput = (key, value) => {
+        const updatedProduct = { ...televisionDetails, [key] : value }
+        setTelevisionDetails(updatedProduct);
+    }
+
+    const handleLaptopProductInput = (key, value) => {
+        const updatedProduct = { ...laptopDetails, [key] : value }
+        setLaptopDetails(updatedProduct);
     }
 
     const renderProductDetailsModal = () => {
@@ -589,18 +890,32 @@ const Products = () => {
         switch(type){
             case 'smartPhone':
                 dispatch(deleteSmartPhoneProductById(deleteProduct));
-            break;
+                break;
             case 'clothing':
                 dispatch(deleteClothingProductById(deleteProduct));
-            break;
+                break;
+            case 'television':
+                dispatch(deleteTelevisionProductById(deleteProduct));
+                break;
+            case 'laptop':
+                dispatch(deleteLaptopProductById(deleteProduct));
+                break;
             default:
-                dispatch(deleteProductById(deleteProduct));
+                if(smartPhones.length > 0 || clothes.length > 0 || televisions.length > 0 || laptops.length > 0){
+                    setErrorDelete(true);
+                }else{
+                    dispatch(deleteProductById(deleteProduct));
+                }
         }
         setAlertDelete(false);
     }
 
     const onCloseDeleteModal = () => {
         setAlertDelete(false);
+    }
+
+    const onCloseErrorModal = () => {
+        setErrorDelete(false);
     }
 
     const renderAlertDeleteModal = () => {
@@ -627,6 +942,25 @@ const Products = () => {
         )
     }
 
+    const renderErrorDeleteModal = () => {
+        return (
+            <Modal
+                show={errorDelete}
+                handleClose={() => setErrorDelete(false)}
+                modalTitle={'Error'}
+                 buttons={[
+                {
+                    label: 'Yes',
+                    color: 'primary',
+                    onClick: onCloseErrorModal
+                }
+            ]}
+            >
+                You must delete all variants before remove this product from store.
+            </Modal>
+        )
+    }
+
     const productFilterBySearch = (e) => {
         setSearch(e.target.value);
         if(e.target.value === ''){
@@ -636,9 +970,18 @@ const Products = () => {
         }
     }
 
-    const showAlertDeleteModal = (payload) => {
+    const showAlertDeleteModal = (payload, product) => {
         setAlertDelete(true);
         setDeleteProduct(payload);
+        if(product){
+            if(smartPhoneCat.includes(product.category.name)){
+                dispatch(getSmartPhoneProductDetailsById(product));
+            }else if(clothingCat.includes(product.category.name)){
+                dispatch(getClothingProductDetailsById(product));
+            }else if(televisionCat.includes(product.category.name)){
+                dispatch(getTelevisionProductDetailsById(product));
+            }
+        }
     }
 
     return (
@@ -651,10 +994,12 @@ const Products = () => {
                             <button onClick={handleShow}>Add</button>
                         </div>
                         {
-                            smartPhone || clothing ? 
+                            smartPhone || clothing || television || laptop ? 
                             <button onClick={() => {
                                 setSmartPhone(false);
                                 setClothing(false);
+                                setTelevision(false);
+                                setLaptop(false);
                             }}>Go back</button> : 
                             null
                         }
@@ -670,15 +1015,18 @@ const Products = () => {
                 </Row>
                 <Row>
                     <Col style={{ height: 600 }}>
-                        { smartPhone || clothing ? renderVariantProducts() : renderProducts()}
+                        { smartPhone || clothing || television || laptop ? renderVariantProducts() : renderProducts()}
                     </Col>
                 </Row>
             </Container>
             { smartPhone ? renderAddSmartPhoneDetailsModal() : 
                 clothing ? renderAddClothingDetailsModal() :
+                television ? renderAddTelevisionDetailsModal() :
+                laptop ? renderAddLaptopDetailsModal() :
                 renderAddProductModal() }
             {renderProductDetailsModal()}
             {renderAlertDeleteModal()}
+            {renderErrorDeleteModal()}
             <UpdateProductsModal
                 show={updateProductModal}
                 handleClose={() => {setUpdateProductModal(false)}}
@@ -712,6 +1060,24 @@ const Products = () => {
                 product={clothingDetails}
                 handleProductInput={handleClothingProductInput}
                 modalTitle={'Update Clothing Variants'}
+                size="lg"
+            />
+            <UpdateTelevisionProductsModal
+                show={updateTelevisionProductModal}
+                handleClose={() => setUpdateTelevisionProductModal(false)}
+                handleSave={handleUpdateTelevision}
+                product={televisionDetails}
+                handleProductInput={handleTelevisionProductInput}
+                modalTitle={'Update Television Variants'}
+                size="lg"
+            />
+            <UpdateLaptopProductsModal
+                show={updateLaptopProductModal}
+                handleClose={() => setUpdateLaptopProductModal(false)}
+                handleSave={handleUpdateLaptop}
+                product={laptopDetails}
+                handleProductInput={handleLaptopProductInput}
+                modalTitle={'Update Laptop Variants'}
                 size="lg"
             />
         </Layout>

@@ -17,8 +17,12 @@ const ListProductDetails = (props) => {
     const product = useSelector(state => state.product);
     let smartPhones = [];
     let clothing = [];
+    let televisions = [];
+    let laptops = [];
     smartPhones = product.smartPhones;
     clothing = product.clothing;
+    televisions = product.televisions;
+    laptops = product.laptops;
     switch(props.type){
         case 'smartPhone':
             return  (
@@ -110,7 +114,8 @@ const ListProductDetails = (props) => {
                                                 const payload = {
                                                     productId: product._id,
                                                     product: productId,
-                                                    type: props.type
+                                                    type: props.type,
+                                                    quantity: product.quantity
                                                 };
                                                 showAlertDeleteModal(payload); 
                                             }}
@@ -123,7 +128,111 @@ const ListProductDetails = (props) => {
                         }
                     </tbody>
                 </Table>
-            ) 
+            )
+        case 'television':
+            return (
+                <Table style={{ fontSize: 12 }} responsive="sm">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Quantity</th>
+                        <th>Resolution</th>
+                        <th>Screen Type</th>
+                        <th>Operating System</th>
+                        <th>Screen Size</th>                      
+                    </tr>
+                    </thead>
+                    <tbody>
+                        {
+                            televisions.length > 0 ?
+                            televisions.map(product =>
+                                <tr key={product._id}>
+                                    <td>{televisions.indexOf(product) + 1}</td>
+                                    <td>{product.quantity}</td>
+                                    <td>{product.resolution}</td>
+                                    <td>{product.screenType}</td>
+                                    <td>{product.operatingSystem}</td>
+                                    <td>{product.screenSize}</td>                      
+                                    <td style={{ justifyContent: "center", alignItems: "center" }}>
+                                        <button onClick={() => showUpdateProductModal(product)}>
+                                            <IoIosCreate color="green" size={20} />
+                                        </button>
+                                        <button
+                                            onClick={() => {
+                                                const payload = {
+                                                    productId: product._id,
+                                                    product: productId,
+                                                    type: props.type,
+                                                    quantity: product.quantity
+                                                };
+                                                showAlertDeleteModal(payload); 
+                                            }}
+                                        >
+                                            <IoIosTrash color="red" size={20}/>
+                                        </button>
+                                    </td>
+                                </tr>
+                            ) : null
+                        }
+                    </tbody>
+                </Table>
+            )
+        case 'laptop':
+            return (
+                <Table style={{ fontSize: 12 }} responsive="sm">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Quantity</th>
+                        <th>Ram</th>
+                        <th>Hard Disk Capacity</th>
+                        <th>Screen Resolution</th> 
+                        <th>Operating System</th>
+                        <th>Processor</th>
+                        <th>Graphic Processor</th>
+                        <th>Weight</th>
+                        <th>Screen Size</th>                     
+                    </tr>
+                    </thead>
+                    <tbody>
+                        {
+                            laptops.length > 0 ?
+                            laptops.map(product =>
+                                <tr key={product._id}>
+                                    <td>{laptops.indexOf(product) + 1}</td>
+                                    <td>{product.quantity}</td>
+                                    <td>{product.ram}</td>
+                                    <td>{product.hardDiskCapacity}</td>
+                                    <td>{product.screenResolution}</td>
+                                    <td>{product.operatingSystem}</td>
+                                    <td>{product.processor}</td>
+                                    <td>{product.graphicProcessor}</td>
+                                    <td>{product.weight}</td>
+                                    <td>{product.screenSize}</td>                      
+                                    <td style={{ justifyContent: "center", alignItems: "center" }}>
+                                        <button onClick={() => showUpdateProductModal(product)}>
+                                            <IoIosCreate color="green" size={20} />
+                                        </button>
+                                        <button
+                                            onClick={() => {
+                                                const payload = {
+                                                    productId: product._id,
+                                                    product: productId,
+                                                    type: props.type,
+                                                    quantity: product.quantity
+                                                };
+                                                showAlertDeleteModal(payload); 
+                                            }}
+                                        >
+                                            <IoIosTrash color="red" size={20}/>
+                                        </button>
+                                    </td>
+                                </tr>
+                            ) : null
+                        }
+                    </tbody>
+                </Table>
+            )
     }
     
 }
