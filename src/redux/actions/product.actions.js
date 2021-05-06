@@ -427,3 +427,72 @@ export const deleteFurnitureProductById = (payload) => {
         }
     };
 };
+
+export const getBookProductDetailsById = (product) => {
+    return async dispatch => {
+        let res;
+        dispatch({ type: productConstants.GET_BOOK_PRODUCT_DETAILS_BY_ID_REQUEST });
+        try {
+            const { _id } = product;
+            res = await axios.get(`/product/book/${_id}`);
+            dispatch({
+                type: productConstants.GET_BOOK_PRODUCT_DETAILS_BY_ID_SUCCESS,
+                payload: { productDetails: res.data.product }
+            });
+            console.log(_id, res);
+        }catch(error){
+            console.log(error);
+            dispatch({
+                type: productConstants.GET_BOOK_PRODUCT_DETAILS_BY_ID_FAILURE,
+                payload: { error: res.data.error }
+            })
+        }
+    }
+}
+
+export const addBookProductDetails = (payload) => {
+    const { product } = payload;
+    return async (dispatch) => {
+        try{
+            dispatch({ type: productConstants.ADD_BOOK_PRODUCT_REQUEST });
+            const res = await axios.post(`product/editBookProductDetail`, { ...payload });
+
+            if(res.status === 201){
+                dispatch({ type: productConstants.ADD_BOOK_PRODUCT_SUCCESS });
+                dispatch(getBookProductDetailsById({ _id: product }));
+                dispatch(getProducts());
+            }else{
+                dispatch({ type: productConstants.ADD_BOOK_PRODUCT_FAILURE });
+            }
+        }catch(error){
+            console.log(error);
+        }
+    };
+}
+
+export const deleteBookProductById = (payload) => {
+    const { product } = payload;
+    return async (dispatch) => {
+        try{
+            const res = await axios.delete(`product/deleteBookProductById`, {
+                data: {payload}
+            });
+            dispatch({ type: productConstants.DELETE_BOOK_PRODUCT_BY_ID_REQUEST })
+            if(res.status === 202){
+                dispatch({ type: productConstants.DELETE_BOOK_PRODUCT_BY_ID_SUCCESS });
+                dispatch(getBookProductDetailsById({ _id: product }));
+                dispatch(getProducts());
+            }else{
+                const { error } = res.data;
+                dispatch({
+                    type: productConstants.DELETE_BOOK_PRODUCT_BY_ID_FAILURE,
+                    payload: {
+                        error,
+                    },
+                });
+            }
+        }catch(error){
+            console.log(error);
+        }
+    };
+};

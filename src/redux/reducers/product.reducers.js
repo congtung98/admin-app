@@ -7,6 +7,7 @@ const initialState = {
     televisions: [],
     laptops: [],
     furnitures: [],
+    books: [],
     loading: false,
     error: null
 };
@@ -74,6 +75,18 @@ export default (state = initialState, action) => {
             }
             break;
         case productConstants.ADD_FURNITURE_PRODUCT_SUCCESS:
+            state = {
+                ...state,
+                loading: false
+            }
+            break;
+        case productConstants.GET_BOOK_PRODUCT_DETAILS_BY_ID_SUCCESS:
+            state = {
+                ...state,
+                books: action.payload.productDetails
+            }
+            break;
+        case productConstants.ADD_BOOK_PRODUCT_SUCCESS:
             state = {
                 ...state,
                 loading: false

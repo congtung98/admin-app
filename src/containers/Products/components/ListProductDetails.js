@@ -20,11 +20,13 @@ const ListProductDetails = (props) => {
     let televisions = [];
     let laptops = [];
     let furnitures = [];
+    let books = [];
     smartPhones = product.smartPhones;
     clothing = product.clothing;
     televisions = product.televisions;
     laptops = product.laptops;
     furnitures = product.furnitures;
+    books = product.books;
     switch(props.type){
         case 'smartPhone':
             return  (
@@ -255,6 +257,52 @@ const ListProductDetails = (props) => {
                                     <td>{product.quantity}</td>
                                     <td>{product.primaryColor}</td>
                                     <td>{product.material}</td>                     
+                                    <td style={{ justifyContent: "center", alignItems: "center" }}>
+                                        <button onClick={() => showUpdateProductModal(product)}>
+                                            <IoIosCreate color="green" size={20} />
+                                        </button>
+                                        <button
+                                            onClick={() => {
+                                                const payload = {
+                                                    productId: product._id,
+                                                    product: productId,
+                                                    type: props.type,
+                                                    quantity: product.quantity
+                                                };
+                                                showAlertDeleteModal(payload); 
+                                            }}
+                                        >
+                                            <IoIosTrash color="red" size={20}/>
+                                        </button>
+                                    </td>
+                                </tr>
+                            ) : null
+                        }
+                    </tbody>
+                </Table>
+            )
+        case 'book':
+            return (
+                <Table style={{ fontSize: 12 }} responsive="sm">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Quantity</th>
+                        <th>Author</th>
+                        <th>Publisher</th>
+                        <th>Genre</th>                   
+                    </tr>
+                    </thead>
+                    <tbody>
+                        {
+                            books.length > 0 ?
+                            books.map(product =>
+                                <tr key={product._id}>
+                                    <td>{books.indexOf(product) + 1}</td>
+                                    <td>{product.quantity}</td>
+                                    <td>{product.author}</td>
+                                    <td>{product.publisher}</td>
+                                    <td>{product.genre}</td>                       
                                     <td style={{ justifyContent: "center", alignItems: "center" }}>
                                         <button onClick={() => showUpdateProductModal(product)}>
                                             <IoIosCreate color="green" size={20} />

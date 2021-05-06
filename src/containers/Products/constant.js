@@ -7,11 +7,14 @@ export const televisionCat = ['Television']
 export const laptopCat = ['Laptop', 'Gaming Laptops']
 
 export const furnitureCat = ['Furniture', 'Beds', 'Sofa', 'Dining Tables & Chairs']
+
+export const bookCat = ['Books']
   
 export default {
     smartPhoneCat,
     clothingCat,
     televisionCat,
     laptopCat,
-    furnitureCat
+    furnitureCat,
+    bookCat
 }

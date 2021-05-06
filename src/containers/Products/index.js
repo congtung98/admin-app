@@ -3,7 +3,7 @@ import Layout from '../../components/Layout';
 import { Container, Row, Col, Table } from 'react-bootstrap';
 import Input from '../../components/UI/Input';
 import { useDispatch, useSelector } from 'react-redux';
-import { addClothingProductDetails, addFurnitureProductDetails, addLaptopProductDetails, addProduct, addSmartPhoneProductDetails, addTelevisionProductDetails, deleteClothingProductById, deleteFurnitureProductById, deleteLaptopProductById, deleteProductById, deleteSmartPhoneProductById, deleteTelevisionProductById, getClothingProductDetailsById, getFurnitureProductDetailsById, getLaptopProductDetailsById, getSmartPhoneProductDetailsById, getTelevisionProductDetailsById, updateProduct } from '../../redux/actions';
+import { addBookProductDetails, addClothingProductDetails, addFurnitureProductDetails, addLaptopProductDetails, addProduct, addSmartPhoneProductDetails, addTelevisionProductDetails, deleteBookProductById, deleteClothingProductById, deleteFurnitureProductById, deleteLaptopProductById, deleteProductById, deleteSmartPhoneProductById, deleteTelevisionProductById, getBookProductDetailsById, getClothingProductDetailsById, getFurnitureProductDetailsById, getLaptopProductDetailsById, getSmartPhoneProductDetailsById, getTelevisionProductDetailsById, updateProduct } from '../../redux/actions';
 import Modal from '../../components/UI/Modal';
 import './style.css';
 import { generatePublicUrl } from '../../urlConfig';
@@ -12,12 +12,13 @@ import UpdateProductsModal from './components/UpdateProductsModal';
 import UpdateSmartPhoneProductsModal from './components/UpdateSmartPhoneProductsModal';
 import { useEffect } from 'react';
 import ListProductDetails from './components/ListProductDetails';
-import { clothingCat, furnitureCat, laptopCat, smartPhoneCat, televisionCat } from './constant';
+import { bookCat, clothingCat, furnitureCat, laptopCat, smartPhoneCat, televisionCat } from './constant';
 import Pagination from './components/Pagination';
 import UpdateClothingProductsModal from './components/UpdateClothingProductsModal';
 import UpdateTelevisionProductsModal from './components/UpdateTelevisionProductsModal';
 import UpdateLaptopProductsModal from './components/UpdateLaptopProductsModal';
 import UpdateFurnitureProductsModal from './components/UpdateFurnitureProductsModal';
+import UpdateBookProductsModal from './components/UpdateBookProductsModal';
 
 const Products = () => {
 
@@ -84,6 +85,14 @@ const Products = () => {
     const [material, setMaterial] = useState('');
     const [updateFurnitureProductModal, setUpdateFurnitureProductModal] = useState(false);
     const [furnitureDetails, setFurnitureDetails] = useState(null);
+
+    //state book
+    const [book, setBook] = useState(false);
+    const [author, setAuthor] = useState('');
+    const [publisher, setPublisher] = useState('');
+    const [genre, setGenre] = useState('');
+    const [updateBookProductModal, setUpdateBookProductModal] = useState(false);
+    const [bookDetails, setBookDetails] = useState(null);
     
     const [productId, setProductID] = useState('');
     const category = useSelector(state => state.category);
@@ -122,19 +131,25 @@ const Products = () => {
             if(productDetails.quantity && product.furnitures.length === 0){
                 setQuantity(productDetails.quantity);
             }
+        }else if(book){
+            if(productDetails.quantity && product.books.length === 0){
+                setQuantity(productDetails.quantity);
+            }
         }
-    }, [product.smartPhones, product.clothing, product.televisions, product.laptops, product.furnitures])
+    }, [product.smartPhones, product.clothing, product.televisions, product.laptops, product.furnitures, product.books])
 
     let smartPhones = [];
     let clothes = [];
     let televisions = [];
     let laptops = [];
     let furnitures = [];
+    let books = [];
     smartPhones = product.smartPhones;
     clothes = product.clothing;
     televisions = product.televisions;
     laptops = product.laptops;
     furnitures = product.furnitures;
+    books = product.books;
     // Get current posts
     const indexOfLastProd = currentPage * productsPerPage;
     const indexOfFirstProd = indexOfLastProd - productsPerPage;
@@ -271,6 +286,23 @@ const Products = () => {
         setMaterial('');
     }
 
+    const handleAddBook = () => {
+        const payload = {
+            quantity,
+            author,
+            publisher,
+            genre,
+            product: productId,
+        }
+        dispatch(addBookProductDetails(payload));
+
+        setShow(false);
+        setQuantity('');
+        setAuthor('');
+        setPublisher('');
+        setGenre('');
+    }
+
     const handleUpdate = () => {
         let arr = productDetails.productPictures.map(function (obj) {
             return obj.img;
@@ -327,6 +359,12 @@ const Products = () => {
         setUpdateFurnitureProductModal(false);
     }
 
+    const handleUpdateBook = () => {
+        const payload = bookDetails;
+        dispatch(addBookProductDetails(payload));
+        setUpdateBookProductModal(false);
+    }
+
     const handleShow = () => setShow(true);
 
     const createCategoryList = (categories, options = []) => {
@@ -372,7 +410,8 @@ const Products = () => {
         const televisionCategory = televisionCat;
         const laptopCategory = laptopCat;
         const furnitureCategory = furnitureCat;
-        console.log(p.category.name, smartPhoneCategory, clothingCat, laptopCategory);
+        const bookCategory = bookCat;
+
         if(smartPhoneCategory.includes(p.category.name)){
             dispatch(getSmartPhoneProductDetailsById(p));
             setSmartPhone(true);
@@ -388,6 +427,9 @@ const Products = () => {
         }else if(furnitureCategory.includes(p.category.name)){
             dispatch(getFurnitureProductDetailsById(p));
             setFurniture(true);
+        }else if(bookCategory.includes(p.category.name)){
+            dispatch(getBookProductDetailsById(p));
+            setBook(true);
         }
     }
 
@@ -424,6 +466,13 @@ const Products = () => {
             return <ListProductDetails
                         type="furniture"
                         showUpdateProductModal={showUpdateFurnitureProductModal}
+                        productId={productId}
+                        showAlertDeleteModal={showAlertDeleteModal}
+                    />
+        }else if(book){
+            return <ListProductDetails
+                        type="book"
+                        showUpdateProductModal={showUpdateBookProductModal}
                         productId={productId}
                         showAlertDeleteModal={showAlertDeleteModal}
                     />
@@ -856,6 +905,52 @@ const Products = () => {
         )
     }
 
+    const renderAddBookDetailsModal = () => {
+        return (
+            <Modal
+                show={show}
+                handleClose={handleClose}
+                handleSave={handleAddBook}
+                modalTitle={'Add New Variant Product'}
+            >
+                {
+                    productDetails.quantity && product.books.length === 0 ?
+                    <Input
+                        disabled={true}
+                        label="Quantity"
+                        value={productDetails.quantity}
+                        placeholder={`Quantity`}
+                        onChange={(e) => setQuantity(e.target.value)}
+                    /> :   
+                    <Input
+                        label="Quantity"
+                        value={quantity}
+                        placeholder={`Quantity`}
+                        onChange={(e) => setQuantity(e.target.value)}
+                    />
+                }   
+                <Input
+                    label="Author"
+                    value={product.author}
+                    placeholder={`Author of product`}
+                    onChange={(e) => setAuthor(e.target.value)}
+                />            
+                <Input
+                    label="Publisher"
+                    value={product.publisher}
+                    placeholder={`Publisher of product`}
+                    onChange={(e) => setPublisher(e.target.value)}
+                /> 
+                <Input
+                    label="Genre"
+                    value={product.genre}
+                    placeholder={`Genre of product`}
+                    onChange={(e) => setGenre(e.target.value)}
+                />            
+            </Modal>
+        )
+    }
+
     const handleCloseProductDetailsModal = () => {
         setProductDetailModal(false);
     }
@@ -895,6 +990,11 @@ const Products = () => {
         setUpdateFurnitureProductModal(true);
     }
 
+    const showUpdateBookProductModal = (product) => {
+        setBookDetails(product);
+        setUpdateBookProductModal(true);
+    }
+
     const handleProductInput = (key, value) => {
         const updatedProduct = { ...productDetails, [key] : value }
         setProductDetails(updatedProduct);
@@ -923,6 +1023,11 @@ const Products = () => {
     const handleFurnitureProductInput = (key, value) => {
         const updatedProduct = { ...furnitureDetails, [key] : value }
         setFurnitureDetails(updatedProduct);
+    }
+
+    const handleBookProductInput = (key, value) => {
+        const updatedProduct = { ...bookDetails, [key] : value }
+        setBookDetails(updatedProduct);
     }
 
     const renderProductDetailsModal = () => {
@@ -998,8 +1103,11 @@ const Products = () => {
             case 'furniture':
                 dispatch(deleteFurnitureProductById(deleteProduct));
                 break;
+            case 'book':
+                dispatch(deleteBookProductById(deleteProduct));
+                break;
             default:
-                if(smartPhones.length > 0 || clothes.length > 0 || televisions.length > 0 || laptops.length > 0 || furnitures.length > 0){
+                if(smartPhones.length > 0 || clothes.length > 0 || televisions.length > 0 || laptops.length > 0 || furnitures.length > 0 || books.length > 0){
                     setErrorDelete(true);
                 }else{
                     dispatch(deleteProductById(deleteProduct));
@@ -1092,13 +1200,14 @@ const Products = () => {
                             <button onClick={handleShow}>Add</button>
                         </div>
                         {
-                            smartPhone || clothing || television || laptop || furniture ? 
+                            smartPhone || clothing || television || laptop || furniture || book ? 
                             <button onClick={() => {
                                 setSmartPhone(false);
                                 setClothing(false);
                                 setTelevision(false);
                                 setLaptop(false);
                                 setFurniture(false);
+                                setBook(false);
                             }}>Go back</button> : 
                             null
                         }
@@ -1114,7 +1223,7 @@ const Products = () => {
                 </Row>
                 <Row>
                     <Col style={{ height: 600 }}>
-                        { smartPhone || clothing || television || laptop || furniture ? renderVariantProducts() : renderProducts()}
+                        { smartPhone || clothing || television || laptop || furniture || book ? renderVariantProducts() : renderProducts()}
                     </Col>
                 </Row>
             </Container>
@@ -1123,6 +1232,7 @@ const Products = () => {
                 television ? renderAddTelevisionDetailsModal() :
                 laptop ? renderAddLaptopDetailsModal() :
                 furniture ? renderAddFurnitureDetailsModal() :
+                book ? renderAddBookDetailsModal() :
                 renderAddProductModal() }
             {renderProductDetailsModal()}
             {renderAlertDeleteModal()}
@@ -1187,6 +1297,15 @@ const Products = () => {
                 product={furnitureDetails}
                 handleProductInput={handleFurnitureProductInput}
                 modalTitle={'Update Furniture Variants'}
+                size="lg"
+            />
+            <UpdateBookProductsModal
+                show={updateBookProductModal}
+                handleClose={() => setUpdateBookProductModal(false)}
+                handleSave={handleUpdateBook}
+                product={bookDetails}
+                handleProductInput={handleBookProductInput}
+                modalTitle={'Update Book Variants'}
                 size="lg"
             />
         </Layout>
