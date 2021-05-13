@@ -77,7 +77,7 @@ const UpdateSmartPhoneProductsModal = (props) => {
                         label="Color"
                         value={product.color}
                         placeholder={`Color of product`}
-                        onChange={(e) => handleProductInput('name', e.target.value)}
+                        onChange={(e) => handleProductInput('color', e.target.value)}
                     />
                     <Input
                         label="Screen Size"

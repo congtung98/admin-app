@@ -28,6 +28,7 @@ const Products = () => {
     const [quantity, setQuantity] = useState('');
     const [price, setPrice] = useState('');
     const [description, setDescription] = useState('');
+    const [type, setType] = useState('');
     const [categoryId, setCategoryId] = useState('');
     const [productPictures, setProductPictures] = useState([]);
     const [show, setShow] = useState(false);
@@ -171,6 +172,7 @@ const Products = () => {
         form.append('price', price);
         form.append('description', description);
         form.append('category', categoryId);
+        form.append('type', type);
 
         for(let pic of productPictures){
             form.append('productPicture', pic);
@@ -590,6 +592,14 @@ const Products = () => {
                             )
                         }
                 </select>
+                <Input
+                    type="select"
+                    options={[ { value: 'smartPhone', name: 'Smart Phone' }, { value: 'television', name: 'Television' }, { value: 'laptop', name: 'Laptop' }, { value: 'clothing', name: 'Clothing'}, { value: 'furniture', name: 'Furniture'}, { value: 'book', name: 'Book'}]}
+                    label="Type"
+                    value={type}
+                    placeholder={`type of product`}
+                    onChange={(e) => setType(e.target.value)}
+                />
 
                 {
                     productPictures.length > 0 ?
