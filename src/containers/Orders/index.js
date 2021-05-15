@@ -51,7 +51,6 @@ const Orders = (props) => {
                                 justifyContent: "space-between",
                                 padding: "50px 50px",
                                 display: "flex",
-                                alignItems: "center"
                             }}
                         >
                             <div>
