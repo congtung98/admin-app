@@ -43,7 +43,7 @@ const UpdateSmartPhoneProductsModal = (props) => {
                     />
                     <Input
                         type="select"
-                        options={[ { value: '16 GB', name: '16 GB' }, { value: '32 GB', name: '32 GB' }, { value: '64 GB', name: '64 GB'} ]}
+                        options={[ { value: '16 GB', name: '16 GB' }, { value: '32 GB', name: '32 GB' }, { value: '64 GB', name: '64 GB'}, { value: '128 GB', name: '128 GB'}, { value: '256 GB', name: '256 GB'}, { value: '512 GB', name: '512 GB'} ]}
                         label="Storage"
                         value={product.storage}
                         placeholder={`Storage of product`}

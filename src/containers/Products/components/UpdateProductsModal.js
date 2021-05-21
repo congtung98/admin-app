@@ -73,6 +73,12 @@ const UpdateProductsModal = (props) => {
                     onChange={(e) => handleProductInput('price', e.target.value)}
                 />
                 <Input
+                    label="Offer"
+                    value={product.offer}
+                    placeholder={`Offer`}
+                    onChange={(e) => handleProductInput('offer', e.target.value)}
+                />
+                <Input
                     label="Description"
                     value={product.description}
                     placeholder={`Description`}

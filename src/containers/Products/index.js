@@ -27,6 +27,7 @@ const Products = () => {
     const [name, setName] = useState('');
     const [quantity, setQuantity] = useState('');
     const [price, setPrice] = useState('');
+    const [offer, setOffer] = useState('');
     const [description, setDescription] = useState('');
     const [type, setType] = useState('');
     const [categoryId, setCategoryId] = useState('');
@@ -170,6 +171,7 @@ const Products = () => {
         form.append('name', name);
         form.append('quantity', quantity);
         form.append('price', price);
+        form.append('offer', offer);
         form.append('description', description);
         form.append('category', categoryId);
         form.append('type', type);
@@ -314,6 +316,7 @@ const Products = () => {
         form.append('name', productDetails.name);
         form.append('quantity', productDetails.quantity);
         form.append('price', productDetails.price);
+        form.append('offer', productDetails.offer ? productDetails.offer : 0);
         form.append('description', productDetails.description);
         form.append('category', productDetails.category._id);
         form.append('productPictures', arr);
@@ -576,6 +579,12 @@ const Products = () => {
                     onChange={(e) => setPrice(e.target.value)}
                 />
                 <Input
+                    label="Offer"
+                    value={offer}
+                    placeholder={`Offer`}
+                    onChange={(e) => setOffer(e.target.value)}
+                />
+                <Input
                     label="Description"
                     value={description}
                     placeholder={`Description`}
@@ -645,7 +654,7 @@ const Products = () => {
                 />
                 <Input
                     type="select"
-                    options={[ { value: '16 GB', name: '16 GB' }, { value: '32 GB', name: '32 GB' }, { value: '64 GB', name: '64 GB'} ]}
+                    options={[ { value: '16 GB', name: '16 GB' }, { value: '32 GB', name: '32 GB' }, { value: '64 GB', name: '64 GB'}, { value: '128 GB', name: '128 GB'}, { value: '256 GB', name: '256 GB'}, { value: '512 GB', name: '512 GB'} ]}
                     label="Storage"
                     value={storage}
                     placeholder={`Storage of product`}
