@@ -183,7 +183,14 @@ const Products = () => {
         dispatch(addProduct(form));
         
         setShow(false);
+        setName('');
+        setPrice('');
         setQuantity('');
+        setOffer('');
+        setDescription('');
+        setCategoryId('');
+        setType('');
+        setProductPictures([]);
     };
 
     const handleAddSmartPhone = () => {
