@@ -156,6 +156,7 @@ const Products = () => {
     const indexOfLastProd = currentPage * productsPerPage;
     const indexOfFirstProd = indexOfLastProd - productsPerPage;
     const currentProd = product.products.slice(indexOfFirstProd, indexOfLastProd);
+    const currentSearchProd = searchProduct.slice(indexOfFirstProd, indexOfLastProd);
 
     // Change page
     const paginate = pageNumber => setCurrentPage(pageNumber);
@@ -194,6 +195,7 @@ const Products = () => {
     };
 
     const handleAddSmartPhone = () => {
+        const normalizeColor = color.charAt(0).toUpperCase() + color.substr(1);
         const payload = {
             quantity,
             ram,
@@ -202,7 +204,7 @@ const Products = () => {
             resolutionType,
             primaryCamera,
             secondaryCamera,
-            color,
+            color: normalizeColor,
             screenSize,
             product: productId,
         }
@@ -343,6 +345,8 @@ const Products = () => {
 
     const handleUpdateSmartPhone = () => {
         const payload = smartPhoneDetails;
+        const normalizeColor = payload.color.charAt(0).toUpperCase() + payload.color.substr(1);
+        payload.color = normalizeColor;
         dispatch(addSmartPhoneProductDetails(payload));
         setUpdateSmartPhoneProductModal(false);
     }
@@ -494,7 +498,7 @@ const Products = () => {
     const renderProducts = () => {
         let products = [];
         if(isSearch){
-            products = searchProduct;
+            products = currentSearchProd;
         }else{
             products = currentProd;
         }
@@ -551,7 +555,7 @@ const Products = () => {
                 </Table>
                 <Pagination
                     prodsPerPage={productsPerPage}
-                    totalProds={product.products.length}
+                    totalProds={isSearch ? searchProduct.length : product.products.length}
                     paginate={paginate}
                     currentPage={currentPage}
                 />
