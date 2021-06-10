@@ -14,6 +14,7 @@ const NewPage = () => {
     const category = useSelector(state => state.category);
     const [categories, setCategories] = useState([]);
     const [categoryId, setCategoryId] = useState('');
+    const [categoryName, setCategoryName] = useState('');
     const [desc, setDesc] = useState('');
     const [type, setType] = useState('');
     const [banners, setBanners] = useState([]);
@@ -38,8 +39,9 @@ const NewPage = () => {
     }, [page]);
 
     const onCategoryChange = (e) => {
-        categories.find(category => category.value == e.target.value);
+        const cat = categories.find(category => category.value == e.target.value);
         setCategoryId(e.target.value);
+        setCategoryName(cat.name);
         setType(category.type);
     }
     const handleBannerImages = (e) => {
@@ -64,12 +66,13 @@ const NewPage = () => {
         form.append('title', title);
         form.append('description', desc);
         form.append('category', categoryId);
+        form.append('name', categoryName);
         banners.forEach((banner, index) => {
             form.append('banners', banner);
         });
-        products.forEach((product, index) => {
-            form.append('products', product);
-        });
+        // products.forEach((product, index) => {
+        //     form.append('products', product);
+        // });
 
         dispatch(createPage(form));
 
@@ -146,7 +149,7 @@ const NewPage = () => {
                             />
                         </Col>
                     </Row>
-                    {
+                    {/* {
                         products.length > 0 ?
                         products.map((product, index) =>
                             <Row key={index}>
@@ -163,7 +166,7 @@ const NewPage = () => {
                                 onChange={handleProductImages}
                             />
                         </Col>
-                    </Row>
+                    </Row> */}
                 </Container>
             </Modal>
         )
