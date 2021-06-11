@@ -1,7 +1,5 @@
-const baseUrl = 
-    location.hostname === 'localhost' 
-    ? 'http://localhost:2000' 
-    : 'https://datn-rest-server.herokuapp.com/';
+const baseUrl = 'https://datn-rest-server.herokuapp.com';
+// const baseUrl = 'http://localhost:2000';
 
 export const api = `${baseUrl}/api`;
 export const generatePublicUrl = (fileName) => {
