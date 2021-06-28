@@ -34,8 +34,8 @@ const UpdateClothingProductsModal = (props) => {
                         onChange={(e) => handleProductInput('quantity', e.target.value)}
                     />
                     <Input
-                        type="select"
-                        options={[ { value: 'S', name: 'S' }, { value: 'M', name: 'M' }, { value: 'L', name: 'L'}, { value: 'XL', name: 'XL'}, { value: 'XXL', name: 'XXL'} ]}
+                        // type="select"
+                        // options={[ { value: 'S', name: 'S' }, { value: 'M', name: 'M' }, { value: 'L', name: 'L'}, { value: 'XL', name: 'XL'}, { value: 'XXL', name: 'XXL'}, { value: '30', name: '30'}, { value: '32', name: '32'}, { value: '34', name: '34'}, { value: '36', name: '36'}, { value: '38', name: '38'}, { value: 'XXL', name: 'XXL'} ]}
                         label="Size"
                         value={product.size}
                         placeholder={`Size of product`}

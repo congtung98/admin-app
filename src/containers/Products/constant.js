@@ -1,6 +1,6 @@
 export const smartPhoneCat = ['Apple', 'Samsung', 'Xiaomi', 'Realme']
 
-export const clothingCat = ['Footwear', 'Top wear', 'Bottom wear']
+export const clothingCat = ['Footwear', 'Top wear', 'Bottom wear', `Women's Footwear`, `Women's Top wear`, `Women's Bottom wear` ]
 
 export const televisionCat = ['Television']
 

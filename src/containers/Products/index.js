@@ -29,7 +29,7 @@ const Products = () => {
     const [price, setPrice] = useState('');
     const [offer, setOffer] = useState('');
     const [description, setDescription] = useState('');
-    const [type, setType] = useState('');
+    const [type, setType] = useState(null);
     const [categoryId, setCategoryId] = useState('');
     const [productPictures, setProductPictures] = useState([]);
     const [show, setShow] = useState(false);
@@ -736,8 +736,8 @@ const Products = () => {
                     />
                 }
                 <Input
-                    type="select"
-                    options={[ { value: 'S', name: 'S' }, { value: 'M', name: 'M' }, { value: 'L', name: 'L'}, { value: 'XL', name: 'XL'}, { value: 'XXL', name: 'XXL'} ]}
+                    // type="select"
+                    // options={[ { value: 'S', name: 'S' }, { value: 'M', name: 'M' }, { value: 'L', name: 'L'}, { value: 'XL', name: 'XL'}, { value: 'XXL', name: 'XXL'} ]}
                     label="Size"
                     value={size}
                     placeholder={`Size of product`}

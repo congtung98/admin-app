@@ -23,7 +23,6 @@ const Orders = (props) => {
     }
 
     const formatDate = (date) => {
-        console.log(date, 'DATE');
         if(date){
             const d = new Date(date);
             return (
@@ -35,16 +34,29 @@ const Orders = (props) => {
         }
         return "";
     };
+    const formatDate2 = (date) => {
+        if(date){
+            const d = new Date(date);
+            return (
+                <p style={{ margin: 0 }}>{d.getDate()}-{d.getMonth() + 1}-{d.getFullYear()} {d.getHours()}:{d.getMinutes()}</p>
+            );
+        }
+        return "";
+    };
+    let reverseOrders = order.orders.slice();
+    reverseOrders = reverseOrders.reverse();
+    console.log({reverseOrders});
     return (
         <Layout sidebar>
             {
-                order.orders.map((orderItem, index) => (
+                reverseOrders.map((orderItem, index) => (
                     <Card
                         style={{
                             margin: "10px 0"
                         }} 
                         key={index} 
                         headerLeft={orderItem._id}
+                        headerRight={formatDate2(orderItem.createdAt)}
                     >
                         <div
                             style={{
